@@ -11,37 +11,63 @@
 (function () {
   var BASE = "https://raw.githubusercontent.com/321Team/fds-project-architecture/8af821ecf76cd13442210a1bb32b829696200b80/physical_architecture.html";
 
-  var NODE = ""
-    + "        <g id=\"node-mgmt-gw01\" data-node-id=\"mgmt-gw01\" data-node-label=\"mgmt-gw01 (.58/.1)\" tabindex=\"0\" role=\"button\" aria-label=\"Focus mgmt-gw01 (.58/.1), Dual NIC · IF-16 return route, Physical 10.1.93.58 · Mgmt 10.250.10.1 · VMnet1\" aria-pressed=\"false\" data-node-kind=\"security\" data-node-sublabel=\"Phys .58 · Mgmt .1\" data-node-tag=\"server01 Dual NIC · SNAT 금지\" data-node-context=\"Physical Return Route via 10.1.93.58 · Mgmt GW 10.250.10.1 · 내부 SNAT 금지\">\n"
-    + "          <title>mgmt-gw01 (.58/.1) · Phys .58 · Mgmt .1 · Physical Return Route via 10.1.93.58 · Mgmt GW 10.250.10.1 · 내부 SNAT 금지 · server01 Dual NIC · SNAT 금지</title>\n"
-    + "          <rect x=\"168\" y=\"110\" width=\"156\" height=\"62\" rx=\"6\" class=\"c-mask\"/>\n"
-    + "          <rect x=\"168\" y=\"110\" width=\"156\" height=\"62\" rx=\"6\" class=\"c-security\" stroke-width=\"1.5\"/>\n"
-    + "          <g aria-hidden=\"true\" data-semantic-sigil=\"security\" class=\"semantic-sigil s-security\" transform=\"translate(174 116) scale(0.6875)\">\n"
-    + "            <path d=\"M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z\"/>\n"
-    + "            <path d=\"m5.8 8 1.5 1.5 3-3\"/>\n"
-    + "          </g>\n"
-    + "          <text data-node-label=\"\" data-detail-anchor=\"\" x=\"246\" y=\"139\" class=\"t-primary\" font-size=\"11\" font-weight=\"600\" text-anchor=\"middle\">mgmt-gw01 (.58/.1)</text>\n"
-    + "        <text data-detail=\"context\" x=\"246\" y=\"155\" class=\"t-muted\" font-size=\"9\" text-anchor=\"middle\">Phys .58 · Mgmt .1</text>\n"
-    + "        <text data-detail=\"fine\" x=\"246\" y=\"164\" class=\"t-security\" font-size=\"7\" text-anchor=\"middle\">server01 Dual NIC · SNAT 금지</text>\n"
-    + "        </g>\n\n";
+  function node(p) {
+    var cx = p.x + p.w / 2;
+    var kind = p.kind;
+    var sig = {
+      security: '<path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/><path d="m5.8 8 1.5 1.5 3-3"/>',
+      backend: '<path d="M6 3 3 8l3 5M10 3l3 5-3 5"/>',
+      database: '<ellipse cx="8" cy="4" rx="5.5" ry="2.2"/><path d="M2.5 4v6c0 1.2 2.5 2.2 5.5 2.2s5.5-1 5.5-2.2V4"/>'
+    };
+    return ""
+      + '        <g id="node-' + p.id + '" data-node-id="' + p.id + '" data-node-label="' + p.label + '" tabindex="0" role="button" aria-label="Focus ' + p.label + ', ' + p.sub + ', ' + p.ctx + '" aria-pressed="false" data-node-kind="' + kind + '" data-node-sublabel="' + p.sub + '" data-node-tag="' + p.tag + '" data-node-context="' + p.ctx + '">\n'
+      + '          <title>' + p.label + ' · ' + p.sub + ' · ' + p.ctx + ' · ' + p.tag + '</title>\n'
+      + '          <rect x="' + p.x + '" y="' + p.y + '" width="' + p.w + '" height="' + p.h + '" rx="6" class="c-mask"/>\n'
+      + '          <rect x="' + p.x + '" y="' + p.y + '" width="' + p.w + '" height="' + p.h + '" rx="6" class="c-' + kind + '" stroke-width="1.5"/>\n'
+      + '          <g aria-hidden="true" data-semantic-sigil="' + kind + '" class="semantic-sigil s-' + kind + '" transform="translate(' + (p.x + 6) + ' ' + (p.y + 6) + ') scale(0.6875)">' + (sig[kind] || sig.backend) + '</g>\n'
+      + '          <text data-node-label="" data-detail-anchor="" x="' + cx + '" y="' + (p.y + 29) + '" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">' + p.label + '</text>\n'
+      + '        <text data-detail="context" x="' + cx + '" y="' + (p.y + 45) + '" class="t-muted" font-size="9" text-anchor="middle">' + p.sub + '</text>\n'
+      + '        <text data-detail="fine" x="' + cx + '" y="' + (p.y + 54) + '" class="t-' + kind + '" font-size="7" text-anchor="middle">' + p.tag + '</text>\n'
+      + '        </g>\n';
+  }
+
+  var EXTRA = [
+    node({id:"mgmt-gw01", label:"mgmt-gw01 (.58/.1)", sub:"Phys .58 · Mgmt .1", tag:"Dual NIC · SNAT 금지", ctx:"IF-16 return via 10.1.93.58", kind:"security", x:168, y:110, w:156, h:62}),
+    node({id:"ansible01", label:"ansible01 (.10)", sub:"Mgmt 10.250.10.10", tag:"server01 · OID-01", ctx:"VMnet1 management", kind:"backend", x:168, y:188, w:150, h:56}),
+    node({id:"runner", label:"cicd-runner01 (.20)", sub:"Mgmt 10.250.10.20", tag:"server01 · GitHub 443", ctx:"VMnet1 management", kind:"backend", x:328, y:188, w:160, h:56}),
+    node({id:"monitor01", label:"monitor01 (.30)", sub:"Mgmt 10.250.10.30", tag:"External Watchdog", ctx:"VMnet1 management", kind:"backend", x:498, y:188, w:160, h:56}),
+    node({id:"api-lb", label:"k8s-api-lb01 (.109)", sub:"Phys 10.1.93.109:6443", tag:"P0 · IF-11/11A", ctx:"API LB on server01", kind:"security", x:670, y:110, w:168, h:62}),
+    node({id:"dns01", label:"dns01 (.52)", sub:"Phys 10.1.93.52", tag:"P1 Primary BIND", ctx:"server01", kind:"database", x:670, y:188, w:120, h:56}),
+    node({id:"dns02", label:"dns02 (.53)", sub:"Phys 10.1.93.53", tag:"P1 Secondary BIND", ctx:"server08", kind:"database", x:800, y:188, w:128, h:56})
+  ].join("\n");
 
   function patch(html) {
     var frameOld = 'data-composition-frame-label="Mgmt 10.250.10.0/24 · VMnet1" x="326" y="86" width="258" height="106"';
-    var frameNew = 'data-composition-frame-label="Mgmt 10.250.10.0/24 · VMnet1" x="160" y="86" width="424" height="106"';
+    var frameNew = 'data-composition-frame-label="Mgmt 10.250.10.0/24 · VMnet1" x="160" y="86" width="510" height="170"';
     if (html.indexOf(frameOld) === -1) throw new Error("mgmt frame marker missing");
     html = html.replace(frameOld, frameNew);
 
+    var regionOld = 'data-composition-frame-label="Physical FDS Network 10.1.93.0/24 · VMnet0 Bridged · GW .254 · DNS 8.8.8.8" x="148" y="68" width="894" height="459"';
+    if (html.indexOf(regionOld) === -1) throw new Error("physical region marker missing");
+
     var anchor = '        <g id="node-server01"';
     if (html.indexOf(anchor) === -1) throw new Error("server01 node marker missing");
-    html = html.replace(anchor, NODE + anchor);
+    html = html.replace(anchor, EXTRA + "\n" + anchor);
+
+    html = html.replace('data-node-sublabel="mgmt·ansible·runner·monitor"', 'data-node-sublabel="Windows host"');
+    html = html.replace('>mgmt·ansible·runner·monitor</text>', '>Windows host</text>');
+    html = html.replace('data-node-tag="API LB .109 · dns01(P1) .52"', 'data-node-tag="host .23 · VMs 분리 표기"');
+    html = html.replace('>API LB .109 · dns01(P1) .52</text>', '>host .23 · VMs 분리 표기</text>');
 
     var probe = '<path data-edge-from="server01" data-edge-to="edge01" data-edge-label="probe :443"';
-    var edge = '<path data-edge-from="mgmt-gw01" data-edge-to="server01" data-edge-label="same host" data-edge-key="mgmt-host" data-composition-points="324,141;340,141" d="M 324 141 L 340 141" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>\n        ';
+    var edges = ''
+      + '<path data-edge-from="api-lb" data-edge-to="control" data-edge-label="API 6443" data-edge-key="lb-cp" data-composition-points="838,141;850,141" d="M 838 141 L 850 141" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>\n        '
+      + '<path data-edge-from="dns01" data-edge-to="dns02" data-edge-label="53" data-edge-key="dns-axfr" data-composition-points="790,216;800,216" d="M 790 216 L 800 216" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>\n        ';
     if (html.indexOf(probe) === -1) throw new Error("probe edge marker missing");
-    html = html.replace(probe, edge + probe);
+    html = html.replace(probe, edges + probe);
 
     var viewsOld = '{"id":"mgmt-plane","label":"관리·모니터링","focus":["server01","control","edge01","data","workers"],"note":"server01의 API LB, Runner, monitor01이 제어부·registry·edge를 다루는 흐름."}';
-    var viewsNew = '{"id":"mgmt-plane","label":"관리·모니터링","focus":["mgmt-gw01","server01","control","edge01","data","workers"],"note":"mgmt-gw01 Phys .58 / Mgmt .1이 관리망 게이트웨이. server01의 API LB, Runner, monitor01이 제어부·registry·edge를 다루는 흐름."}';
+    var viewsNew = '{"id":"mgmt-plane","label":"관리·모니터링","focus":["mgmt-gw01","ansible01","runner","monitor01","api-lb","dns01","dns02","server01","control","edge01","data","workers"],"note":"관리망 .1/.10/.20/.30, API LB .109, dns01/02 .52/.53. server01은 Windows 호스트."}';
     if (html.indexOf(viewsOld) === -1) throw new Error("guided view marker missing");
     html = html.replace(viewsOld, viewsNew);
     return html;
@@ -53,9 +79,8 @@
       return res.text();
     })
     .then(function (html) {
-      var out = patch(html);
       document.open();
-      document.write(out);
+      document.write(patch(html));
       document.close();
     })
     .catch(function (err) {
