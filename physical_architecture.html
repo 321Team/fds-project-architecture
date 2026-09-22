@@ -1,1 +1,68 @@
-FILE:/tmp/physical_architecture.html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FDS Phase 1 — 물리/네트워크 아키텍처 (Baseline v3.1.19)</title>
+</head>
+<body>
+<p id="boot" style="font-family:sans-serif;padding:24px">물리 아키텍처를 불러오는 중…</p>
+<script>
+(function () {
+  var BASE = "https://raw.githubusercontent.com/321Team/fds-project-architecture/8af821ecf76cd13442210a1bb32b829696200b80/physical_architecture.html";
+
+  var NODE = ""
+    + "        <g id=\"node-mgmt-gw01\" data-node-id=\"mgmt-gw01\" data-node-label=\"mgmt-gw01 (.58/.1)\" tabindex=\"0\" role=\"button\" aria-label=\"Focus mgmt-gw01 (.58/.1), Dual NIC · IF-16 return route, Physical 10.1.93.58 · Mgmt 10.250.10.1 · VMnet1\" aria-pressed=\"false\" data-node-kind=\"security\" data-node-sublabel=\"Phys .58 · Mgmt .1\" data-node-tag=\"server01 Dual NIC · SNAT 금지\" data-node-context=\"Physical Return Route via 10.1.93.58 · Mgmt GW 10.250.10.1 · 내부 SNAT 금지\">\n"
+    + "          <title>mgmt-gw01 (.58/.1) · Phys .58 · Mgmt .1 · Physical Return Route via 10.1.93.58 · Mgmt GW 10.250.10.1 · 내부 SNAT 금지 · server01 Dual NIC · SNAT 금지</title>\n"
+    + "          <rect x=\"168\" y=\"110\" width=\"156\" height=\"62\" rx=\"6\" class=\"c-mask\"/>\n"
+    + "          <rect x=\"168\" y=\"110\" width=\"156\" height=\"62\" rx=\"6\" class=\"c-security\" stroke-width=\"1.5\"/>\n"
+    + "          <g aria-hidden=\"true\" data-semantic-sigil=\"security\" class=\"semantic-sigil s-security\" transform=\"translate(174 116) scale(0.6875)\">\n"
+    + "            <path d=\"M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z\"/>\n"
+    + "            <path d=\"m5.8 8 1.5 1.5 3-3\"/>\n"
+    + "          </g>\n"
+    + "          <text data-node-label=\"\" data-detail-anchor=\"\" x=\"246\" y=\"139\" class=\"t-primary\" font-size=\"11\" font-weight=\"600\" text-anchor=\"middle\">mgmt-gw01 (.58/.1)</text>\n"
+    + "        <text data-detail=\"context\" x=\"246\" y=\"155\" class=\"t-muted\" font-size=\"9\" text-anchor=\"middle\">Phys .58 · Mgmt .1</text>\n"
+    + "        <text data-detail=\"fine\" x=\"246\" y=\"164\" class=\"t-security\" font-size=\"7\" text-anchor=\"middle\">server01 Dual NIC · SNAT 금지</text>\n"
+    + "        </g>\n\n";
+
+  function patch(html) {
+    var frameOld = 'data-composition-frame-label="Mgmt 10.250.10.0/24 · VMnet1" x="326" y="86" width="258" height="106"';
+    var frameNew = 'data-composition-frame-label="Mgmt 10.250.10.0/24 · VMnet1" x="160" y="86" width="424" height="106"';
+    if (html.indexOf(frameOld) === -1) throw new Error("mgmt frame marker missing");
+    html = html.replace(frameOld, frameNew);
+
+    var anchor = '        <g id="node-server01"';
+    if (html.indexOf(anchor) === -1) throw new Error("server01 node marker missing");
+    html = html.replace(anchor, NODE + anchor);
+
+    var probe = '<path data-edge-from="server01" data-edge-to="edge01" data-edge-label="probe :443"';
+    var edge = '<path data-edge-from="mgmt-gw01" data-edge-to="server01" data-edge-label="same host" data-edge-key="mgmt-host" data-composition-points="324,141;340,141" d="M 324 141 L 340 141" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>\n        ';
+    if (html.indexOf(probe) === -1) throw new Error("probe edge marker missing");
+    html = html.replace(probe, edge + probe);
+
+    var viewsOld = '{"id":"mgmt-plane","label":"관리·모니터링","focus":["server01","control","edge01","data","workers"],"note":"server01의 API LB, Runner, monitor01이 제어부·registry·edge를 다루는 흐름."}';
+    var viewsNew = '{"id":"mgmt-plane","label":"관리·모니터링","focus":["mgmt-gw01","server01","control","edge01","data","workers"],"note":"mgmt-gw01 Phys .58 / Mgmt .1이 관리망 게이트웨이. server01의 API LB, Runner, monitor01이 제어부·registry·edge를 다루는 흐름."}';
+    if (html.indexOf(viewsOld) === -1) throw new Error("guided view marker missing");
+    html = html.replace(viewsOld, viewsNew);
+    return html;
+  }
+
+  fetch(BASE, { cache: "no-store" })
+    .then(function (res) {
+      if (!res.ok) throw new Error("base fetch HTTP " + res.status);
+      return res.text();
+    })
+    .then(function (html) {
+      var out = patch(html);
+      document.open();
+      document.write(out);
+      document.close();
+    })
+    .catch(function (err) {
+      var el = document.getElementById("boot");
+      el.textContent = "물리 아키텍처 베이스를 불러오지 못했습니다: " + err.message;
+    });
+})();
+</script>
+</body>
+</html>
