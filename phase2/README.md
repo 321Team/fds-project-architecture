@@ -27,6 +27,8 @@ Phase 1에서 검증한 재현성·무결성·추적성 intent를 보존하고, 
 - 단일 Relay P0 SPOF는 D21 범위의 수용이며 restart/rekey/rebuild/reboot recovery를 #37 Done 전 증명한다.
 
 ## 3. B1 최종 결정을 위한 입력안 — 승인 전 PROPOSED
+2026-10-03 후속 심층리뷰: [권장 설계 R/I/T/P 대조·수정·동결 Gate](reviews/20261003-design-ritp-deep-review.md)가 구체적인 권장안 검토를 보완한다. 판정은 DESIGN_DIRECTION=CONDITIONALLY_SUITABLE / DESIGN_REVIEW=CHANGES_REQUIRED / 전체 Freeze HOLD이다.
+대화의 단일 MachinePool 3-AZ 권고는 정정: HCP pool은 단일 AZ/subnet이며 AZ별 공통 template pool을 후보로 검토한다. 단일 NAT는 별도 SPOF/지원·보안·비용 조건부 후보이다. PrivateLink 추가 SG, ingress/source 보존, 기존 Harbor 차단, managed Secret/복구·관측 adapter mapping을 닫기 전 신규값을 CONFIRMED로 소비하지 않는다.
 권장 순서: HCP를 우선 비교하되 Private API/Private Ingress, 실제 지원 version, worker capacity, egress, private access DNS, Cost-to-Complete를 묶어서 판단한다.
 3 MachinePool×1, m5.2xlarge, root 300 GiB, Pod/Service CIDR는 이 문서에서 확정하지 않는다.
 
