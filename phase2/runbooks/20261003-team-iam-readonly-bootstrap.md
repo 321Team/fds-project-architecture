@@ -213,7 +213,7 @@ aws iam delete-role --role-name FDS-ReadOnly-Audit
 백업 복원은 기존 MFA 삭제 제한 부족도 복원하므로 사고 복구용이다. 다른 사양으로 임의 교체하지 않는다.
 
 ## 검증 상태
-STATIC=source/control flow review only; 현재 로컬 Python 실행 불가로 구문 실행/MOCK 미실시.
+STATIC=source/control flow review + Python AST parse PASS. MOCK 및 AWS 실행 미실시.
 CI=미확인 / IAM_CONFIG_RUNTIME=사용자 실행 대기 / MFA_SIGNIN_ASSUMEROLE=미시험 / INDEPENDENT_REVIEW=PENDING /
 PROJECT_RUNTIME=NOT_RUN / MERGE=NOT_RUN / MAIN_PUBLICATION=NOT_RUN.
 담당: 각 본인 MFA/role login; #35 Lead 이하영; 변경 author 이권욱/AI 지원, 독립 리뷰 별도 담당.
