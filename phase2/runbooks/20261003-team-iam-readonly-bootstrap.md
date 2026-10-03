@@ -1,6 +1,6 @@
 # 팀 3인 IAM bootstrap 보완 / 조회 역할 일괄 연결
 기준: 2026-10-03 17:04:49 KST 사용자 CloudShell 출력. CODEX_ASSISTED.
-상태: 실행 준비 / 사용자 실행 결과 대기 / 독립 리뷰 PENDING.
+상태: v2 수정 준비 / v1 실제 실행 READBACK_MISMATCH / rollback 실제 상태 확인 대기 / 독립 리뷰 PENDING.
 이 파일 편입 또는 IAM readback은 Architecture Freeze/Runtime acceptance/리뷰 승인이 아니다.
 
 ## 범위와 현재 사실
@@ -24,6 +24,14 @@
 Architecture Freeze와 독립 리뷰/보안/검토된 plan 조건은 유지한다. Freeze 전 프로젝트 유료 Create/Apply 금지.
 기존 20261003-gwonuk-console-readiness 안내의 M02는 교육장 데이터/기존 합의에 따른 일별 보고 handoff로 정정; 별도 교육장 사용승인 요구는 superseded.
 
+## 2026-10-03 17:14 KST v1 실패 / v2 수정
+- 사용자 출력: STOP Policy readback mismatch, BACKUP fds-bootstrap-backup-20261003T081354Z.json.
+- v1은 단순 Python equality로 정책을 비교하며 불일치 대상을 출력하지 않고 rollback한다. IAM 허용 목록/Principal 배열 순서와 단일값/배열 표현 차이가 거짓 불일치를 일으킬 수 있는 코드 결함을 확인했다. 변경 직후 IAM eventual consistency도 가능한 원인이다. **이번 실제 실패 원인은 미확인**이며 원본 readback은 v1이 보존하지 않았다.
+- 첨부 백업 다운로드 실패(path contains a reparse point); 백업을 읽었다고 주장하지 않는다. CloudShell 원본 백업 파일과 현재 AWS state를 read-only 조회로 확인해야 한다.
+- v2: Action/Resource/Principal의 집합 표현 및 Statement 순서, Bool 표현만 정규화하며 Effect/범위/Condition은 보존. 4회 제한 재조회(2초 간격), 실패한 정책 이름과 실제/기대값, rollback 후 상태 확인 출력 추가. 이를 전체 IAM 의미 동등성 증명으로 확대하지 않는다.
+- **v1 링크를 재실행하지 않는다.** 현재 rollback이 확인된 뒤 이 v2 코드만 실행한다. 동일 role 또는 다른 정책이 남으면 v2 preflight가 STOP하며 자동 덮어쓰기하지 않는다.
+- mocked AWS return values만 사용한 로컬 검증이며 AWS policy validation/권한 평가/실제 assume 테스트가 아니다.
+
 ## 실행
 AWS 계정774055931866의 루트 콘솔 CloudShell Bash에서 아래 블록을 한 번 복사/실행한다.
 AWS CLI/Python3 필요; 해당 조합은 사용자가 직전 조회에 성공했다. 이 저장소 파일을 원격 fetch하여 자동실행하지 않는다.
@@ -34,7 +42,7 @@ role 생성/정책 grant는 조회 작업용 bootstrap 설정이다. operator �
 
 ```bash
 python3 - <<'PY'
-import copy, datetime, hashlib, json, os, subprocess
+import copy, datetime, hashlib, json, os, subprocess, time
 A = "774055931866"
 G = "FDS-Human-Bootstrap"
 P = "FDS-SelfService-Password-MFA"
@@ -51,6 +59,29 @@ def call(*args, missing=False):
         raise RuntimeError(p.stderr.strip())
     return json.loads(p.stdout or "{}")
 def doc(x): return json.dumps(x, separators=(",", ":"), sort_keys=True)
+def normalize_policy(policy):
+    # Normalize only IAM set-like elements; retain security-sensitive fields.
+    p = copy.deepcopy(policy)
+    statements = p.get("Statement", [])
+    if isinstance(statements, dict): statements = [statements]
+    for s in statements:
+        for key in ("Action", "NotAction", "Resource", "NotResource"):
+            if key in s:
+                values = s[key] if isinstance(s[key], list) else [s[key]]
+                s[key] = sorted(values)
+        for key in ("Principal", "NotPrincipal"):
+            if isinstance(s.get(key), dict):
+                for kind, value in s[key].items():
+                    s[key][kind] = sorted(value if isinstance(value, list) else [value])
+        for operator in ("Bool", "BoolIfExists"):
+            for key, value in s.get("Condition", {}).get(operator, {}).items():
+                values = value if isinstance(value, list) else [value]
+                s["Condition"][operator][key] = sorted(
+                    str(v).lower() if isinstance(v, bool) else v for v in values)
+    p["Statement"] = sorted(statements, key=doc)
+    return p
+def policy_equal(actual, expected):
+    return normalize_policy(actual) == normalize_policy(expected)
 def sha(x): return hashlib.sha256(doc(x).encode()).hexdigest()
 def allow(sid, actions, resource, condition=None):
     s = dict(Sid=sid, Effect="Allow", Action=actions, Resource=resource)
@@ -76,7 +107,7 @@ expected = {"Version":"2012-10-17","Statement":[
           "iam:DeleteVirtualMFADevice"], "arn:aws:iam::*:mfa/${aws:username}"),
     allow("ListVirtualMFA", ["iam:ListVirtualMFADevices"], "*")
 ]}
-if old != expected:
+if not policy_equal(old, expected):
     raise SystemExit("STOP: bootstrap policy differs from supplied snapshot.")
 for user in U:
     x = call("iam","get-user","--user-name",user)["User"]
@@ -157,13 +188,26 @@ try:
     call("iam","put-group-policy","--group-name",G,"--policy-name",GP,
          "--policy-document",doc(switch))
     linked = True
-    checks = [
-        call("iam","get-group-policy","--group-name",G,"--policy-name",P)["PolicyDocument"] == new,
-        call("iam","get-group-policy","--group-name",G,"--policy-name",GP)["PolicyDocument"] == switch,
-        call("iam","get-role-policy","--role-name",R,"--policy-name",RP)["PolicyDocument"] == inventory,
-        call("iam","get-role","--role-name",R)["Role"]["AssumeRolePolicyDocument"] == trust
-    ]
-    if not all(checks): raise RuntimeError("Policy readback mismatch.")
+    intended = {"BOOTSTRAP":new, "ASSUME_GRANT":switch,
+                "ROLE_POLICY":inventory, "ROLE_TRUST":trust}
+    checks = {}
+    for attempt in range(4):
+        actual = {
+            "BOOTSTRAP":call("iam","get-group-policy","--group-name",G,"--policy-name",P)["PolicyDocument"],
+            "ASSUME_GRANT":call("iam","get-group-policy","--group-name",G,"--policy-name",GP)["PolicyDocument"],
+            "ROLE_POLICY":call("iam","get-role-policy","--role-name",R,"--policy-name",RP)["PolicyDocument"],
+            "ROLE_TRUST":call("iam","get-role","--role-name",R)["Role"]["AssumeRolePolicyDocument"]
+        }
+        checks = {k:policy_equal(actual[k], intended[k]) for k in intended}
+        if all(checks.values()): break
+        if attempt < 3: time.sleep(2)
+    print("READBACK_CHECKS:",json.dumps(checks,sort_keys=True))
+    if not all(checks.values()):
+        # Policy documents contain no credentials in this runbook.
+        print("POLICY_DIFFERENCES:",json.dumps(
+            {k:{"actual":actual[k],"expected":intended[k]}
+             for k,v in checks.items() if not v},sort_keys=True))
+        raise RuntimeError("Policy readback mismatch after bounded retries.")
     print(json.dumps({"STATUS":"IAM_CONFIG_READBACK_PASS",
         "BACKUP":backup,"ROLE":R,"BOOTSTRAP_SHA256":sha(new),
         "TRUST_SHA256":sha(trust),"INVENTORY_SHA256":sha(inventory),
@@ -185,6 +229,19 @@ except Exception as e:
     for step in steps:
         try: call(*step)
         except Exception as rollback_error: print("ROLLBACK_CHECK_REQUIRED:",str(rollback_error))
+    try:
+        restored = call("iam","get-group-policy","--group-name",G,
+                        "--policy-name",P)["PolicyDocument"]
+        rollback_checks = {
+            "BOOTSTRAP_RESTORED":policy_equal(restored,old),
+            "ASSUME_GRANT_ABSENT":call("iam","get-group-policy","--group-name",G,
+                "--policy-name",GP,missing=True) is None,
+            "ROLE_ABSENT":call("iam","get-role","--role-name",R,missing=True) is None}
+        print("ROLLBACK_READBACK:",json.dumps(rollback_checks,sort_keys=True))
+        if not all(rollback_checks.values()):
+            print("ROLLBACK_CHECK_REQUIRED: remaining or stale IAM state.")
+    except Exception as verify_error:
+        print("ROLLBACK_CHECK_REQUIRED:",str(verify_error))
     print("BACKUP:",backup)
     raise SystemExit(1)
 PY
@@ -213,7 +270,7 @@ aws iam delete-role --role-name FDS-ReadOnly-Audit
 백업 복원은 기존 MFA 삭제 제한 부족도 복원하므로 사고 복구용이다. 다른 사양으로 임의 교체하지 않는다.
 
 ## 검증 상태
-STATIC=source/control flow review + Python AST parse PASS. MOCK 및 AWS 실행 미실시.
+STATIC=Python AST parse PASS. MOCK=4 checks PASS (표현 동등성, role resource 확대 탐지+복구, preflight drift 쓰기0, Allow/Deny 및 Resource 변경 탐지). v2 AWS 실행 미실시; v1 사용자 실제 실행 mismatch/rollback확인대기.
 CI=미확인 / IAM_CONFIG_RUNTIME=사용자 실행 대기 / MFA_SIGNIN_ASSUMEROLE=미시험 / INDEPENDENT_REVIEW=PENDING /
 PROJECT_RUNTIME=NOT_RUN / MERGE=NOT_RUN / MAIN_PUBLICATION=NOT_RUN.
 담당: 각 본인 MFA/role login; #35 Lead 이하영; 변경 author 이권욱/AI 지원, 독립 리뷰 별도 담당.
