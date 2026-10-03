@@ -1,5 +1,5 @@
 # Phase 2 단일 권장 구성 — 자원·R/I/T/P 기준
-기준시각: 2026-10-03 19:58 KST. 리뷰 반영 revision 2 (원본 후보 HEAD 9850a32). AI: CODEX_ASSISTED.
+기준시각: 2026-10-03 21:00 KST. 리뷰 반영 revision 3 (원본 후보 HEAD 9850a32, 이전 revision2 c421733). AI: CODEX_ASSISTED.
 상태: RECOMMENDED_CANDIDATE / DESIGN_REVIEW=CHANGES_REQUIRED / ARCHITECTURE_FREEZE=HOLD.
 이 문서는 담당자가 선택지를 다시 설계하지 않도록 제공하는 구체 입력안이다. 신규 제안은 Decision 승인값이 아니며, 독립 리뷰와 #34/#38 authority 반영 전 구현에 소비하지 않는다.
 
@@ -143,6 +143,20 @@ P1 live 입력 handoff: #43 본 작업(10-16~19)보다 먼저 #34 최초 Freeze 
 D22는 logical registry/trust/credential/digest/fallback 계약을 Freeze 전 준비하고 실제 cluster endpoint/cold-pull 결과는 Basic Ready 이후 완성한다. 현재 10-15 Final 일정·AC를 임의 수정하지 않고 단계별 authority 차이를 기록한다.
 D23 전체 P1 기능을 P0로 변경하지 않는다. Private 접속의 mandatory DNS subset만 pre-create 계약에 포함한다.
 
+
+### 추가 리뷰 반영: CLI/콘솔 조회 및 증적 수집
+하영 [추가 의견](https://github.com/321Team/fds-project-architecture/pull/8#issuecomment-5968593648)의 조회방법·credential/민감정보·team전체setup부담을 보완했다.
+권장: 기존 MFA FDS-ReadOnly-Audit **CloudShell 1인 실행**으로 AWS고정조회 원본/RC/KST/hash 수집 + Red Hat 콘솔의 HCPversion/type/연결상태 별도 관측. 팀원 전체 로컬CLI설치나 새 장기키/ROSA토큰 저장을 선행조건으로 만들지 않는다.
+[실행·증적 handoff](../runbooks/20261003-readiness-evidence-capture.md), [AWS read-only script](../runbooks/phase2-readiness-capture.py).
+수집자는 하영 #35/#38 Lead 또는 이미 역할세션 가능한 권욱 대행. 실제 수집/계정결과 판단/증적review는 미완료.
+- 이미 확인한 EC2Standard100/AMI/VPC를 재시험하는 대신 미확인 EIP/NAT등quota·현재EIP/NATusage·ELBrole·EC2offering/type만 고정조회한다. PrincipalSTS는 매실행guard이므로 다시 확인한다.
+- 예상account/assumedrole/member guard; root/다른계정·role/session STOP. commandargs고정, AWSwrite/ROSA호출/권한확대/토큰처리 없음. globalIAMmetadata+regionalAWS범위 구분.
+- AWSCLI원본과 CONSOLE_OBSERVATION은 다른증적. screenshot도 SHA검증가능하지만 파일무결성만 입증하며 actualAPI진실성/전체runtime준비를 입증하지 않는다.
+- raw에 accountID/ARN/IPmetadata가 포함될 수 있어 자동Git편입 금지. 원본보존+접근제한, 검토후sanitized derivative에 원본/파생sha·size와field별provenance 기록. Secrets/token/PSK/privatekey 발견시 publicationSTOP. cache/env/HAR/cookie/token을 수집하지 않는다.
+- RedHat권한은 AWSreadonly와 별개. 이번 collector에는 rosa list/verify/create/login조차 포함하지 않으며 exactsupport는console관측+공식constraints와대조.
+- readonlyscript는 실제계정에 실행하지 않았고 로컬 AST+5개MOCK경로만 검증했다. 조회RC0는수집완전성일뿐 GO아님; GetRoleDENIED와 ListRolesempty 구분. 부분실패/timeout은RC/원본을 보존해 PENDING으로인계.
+이 절차는 PR8의 현재준비조회 handoff이며 개인협업지침을 새팀공용정책으로 승격하지 않는다.
+
 ## 7. 설계 고정과 후속 절차
 1. 아래 남은 입력을 채우고 신규 후보값을 #34/#38 및 해당 Decision에 독립 검토와 함께 승인한다.
 2. 현재 HOLD 해소를 확인한 뒤 Architecture Freeze를 기록한다. 선택한 모델/보안 계약을 고정하고 actual IDs는 post-create evidence로 남긴다.
@@ -172,6 +186,8 @@ D23 전체 P1 기능을 P0로 변경하지 않는다. Private 접속의 mandator
 | 하영2 비용 | full항목·hourly공식·H_max, DNS 가격·소계 | 미검증 total을 발명하지 않음; 서울 나머지 단가/한도 입력 PENDING |
 | 하영3 PVC | OSdisk vsPVC 분리, AZ affinity/분류/restore/RPO-RTO | 검증계약 보완; live PVC inventory/실제복구 PENDING |
 | 하영4 계정 | ELBrole 생성주체/준비gate·명칭별quota/EIP4 | handoff 보완; successful bootstrap/readback PENDING |
+
+추가 하영CLI/콘솔의견: 단일실행자/고정AWS조회/raw+hash/ROSA별도관측/민감정보분리 절차와 실제copy가능한 collector 준비. 절차·코드작성 STATIC/MOCK만 완료, AWS actual수집·독립코드review는 PENDING.
 
 기존 reviewer COMMENTED/의견은 APPROVED가 아니며, 이 revision의 독립 재리뷰가 필요하다. reviewer의 미확인 autorepair/EgressIP/가격 주장도 actual 지원/관측 전 확정하지 않는다.
 
