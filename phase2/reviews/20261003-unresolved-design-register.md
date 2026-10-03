@@ -40,7 +40,7 @@ NAT1대는 supported install path·별도 SPOF 위험수용·비용/보안 검�
 - ELB role 미존재/autoCreate denied는 준비미완료. topology 선택값 자체가 미정이라는 사실과 분리; 실제 activation/지원계정조건은 설계안 feasibility 입력.
 
 ## C. 생성 후 실제 관측값 — 그 값 부재만으로 Freeze를 순환차단하지 않음
-VPC/subnet/route/Relayinstance/ENI/EIP allocation/publicIP/SG actual IDs, ROSAClusterID/API·Ingress实际FQDN/private endpoint, assignedPodUID/nodeIP/실제DBegresssource。
+VPC/subnet/route/Relayinstance/ENI/EIP allocation/publicIP/SG actual IDs, ROSAClusterID/API·Ingress실제FQDN/private endpoint, assignedPodUID/nodeIP/실제DBegresssource.
 생성 전 생성규칙/관측/제한/갱신/인수계약을 고정하고 생성 후 actual을 연결한다.
 PSK/token/privatekey 원문은GitHub에기록하지 않는다. credential reference·rotation/access contract만 기록.
 
@@ -55,11 +55,11 @@ PSK/token/privatekey 원문은GitHub에기록하지 않는다. credential refere
 
 ## E. 권장 닫기 순서
 1. #38 supportedHCP/Classic/version + actualplatformcapacity/accountSupport/linkage 입력.
-2. #34 ROSA모델/APIIngress/egress 후보선정 → #40 PrivateDNS/관리source경로 → subnet/NAT/endpoint/cost비교。
+2. #34 ROSA모델/APIIngress/egress 후보선정 → #40 PrivateDNS/관리source경로 → subnet/NAT/endpoint/cost비교.
 3. #37/#47 최소forward/stableDBsource/actor분리 계약과 #42 D22단계handoff정리.
-4. #38/#43 arbitraryUID·managedSecret/recovery/observability mapping 및데이터회귀계약。
+4. #38/#43 arbitraryUID·managedSecret/recovery/observability mapping 및데이터회귀계약.
 5. #34 authority충돌0/필수설계미정0 → Freeze. #35 backend/operator/검토된plan 등 실행gate충족 후paidApply.
-작성/static/mock/CI/계정조회/ROSARuntime/Review/Merge/Publication은별도상태로유지。
+작성/static/mock/CI/계정조회/ROSARuntime/Review/Merge/Publication은별도상태로유지.
 
 공식대조:
 - https://docs.aws.amazon.com/rosa/latest/userguide/getting-started-hcp.html
