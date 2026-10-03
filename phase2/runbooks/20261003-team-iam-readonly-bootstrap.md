@@ -201,7 +201,7 @@ aws ec2 describe-vpcs --region ap-northeast-2 --query 'Vpcs[].{VpcId:VpcId,Cidr:
 aws service-quotas get-service-quota --service-code ec2 --quota-code L-1216C47A --region ap-northeast-2 --query 'Quota.Value' --output text --no-cli-pager
 ```
 expected principal=assumed-role/FDS-ReadOnly-Audit/...; quota는 최신 실제 조회값을 사용한다. 기존 기록100과 다르면 차이를 기록한다.
-5. Negative: MFAなしでは role trustが拒否する設計。手作業のCreate/Deleteや有料API呼出で拒否を試験しない。独立Reviewerがpolicy/trustと失敗パスを確認する。
+5. Negative: MFA 없이는 role trust가 거부하는 설계다. Create/Delete 또는 유료 API 호출로 거부 시험을 하지 않는다. 독립 Reviewer가 policy/trust 및 실패 경로를 확인한다.
 6. 실행 결과에는 KST시각, config hash, 각 담당자 MFA 로그인/Assume 결과를 구분한다. QR/OTP/credentials를 공개하지 않는다.
 7. 아래 복구는 자동rollback 실패 또는 명시적 revert시에만 사용한다. script 출력 BACKUP의 실제 파일명을 지정한다.
 ```bash
@@ -212,8 +212,8 @@ aws iam delete-role --role-name FDS-ReadOnly-Audit
 ```
 백업 복원은 기존 MFA 삭제 제한 부족도 복원하므로 사고 복구용이다. 다른 사양으로 임의 교체하지 않는다.
 
-## 検証状態
+## 검증 상태
 STATIC=source/control flow review only; 현재 로컬 Python 실행 불가로 구문 실행/MOCK 미실시.
-CI=未確認 / IAM_CONFIG_RUNTIME=ユーザー実行待ち / MFA_SIGNIN_ASSUMEROLE=未試験 / INDEPENDENT_REVIEW=PENDING /
+CI=미확인 / IAM_CONFIG_RUNTIME=사용자 실행 대기 / MFA_SIGNIN_ASSUMEROLE=미시험 / INDEPENDENT_REVIEW=PENDING /
 PROJECT_RUNTIME=NOT_RUN / MERGE=NOT_RUN / MAIN_PUBLICATION=NOT_RUN.
-担当: 각 본인 MFA/role login; #35 Lead 이하영; 변경 author 이권욱/AI 지원, 독립 리뷰 별도 담당.
+담당: 각 본인 MFA/role login; #35 Lead 이하영; 변경 author 이권욱/AI 지원, 독립 리뷰 별도 담당.
