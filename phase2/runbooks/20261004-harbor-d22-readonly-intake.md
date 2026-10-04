@@ -1,5 +1,6 @@
 # D22 현장 read-only 입력 수집 및 승인 연결
 기준: 2026-10-04 KST. AI: CODEX_ASSISTED.
+2026-10-04 보정: 직접 붙여넣기 블록을 별도 Bash+if RC 처리로 변경; nounset 제거 및 HOME 명시 검사. 이전 commit 링크는 변경되지 않는 과거 버전이므로 최신 수정본을 사용한다.
 상태: RUNBOOK_DRAFT / FIELD_EXECUTION=NOT_RUN / D22_FINAL=PENDING.
 대상: [D22 계약 후보](../reviews/20261004-harbor-d22-input-contract.md). Phase1 타 세션 Runtime 작업을 재실행하지 않는다.
 
@@ -21,10 +22,12 @@
 - 설치·trust 갱신·Robot 발급/회전·secret 조회·pull/push·Kubernetes create/apply·firewall 변경은 이 수집 범위 밖이다. 기존 타 세션 적용창과 중복 실행하지 않는다.
 
 ## 3. public leaf 수집 — 고정 CA/고정 목적지
-실행 전에 D22_CA만 실제 공개 Root 파일 절대경로로 바꾼다. env 전체·auth 파일을 출력하지 않는다.
+실행 전에 D22_CA만 실제 공개 Root 파일 절대경로로 바꾼다. 아래 **전체 블록**을 붙여넣는다. 별도 child Bash에서 실행하고 set -u를 사용하지 않는다. 내부 exit는 child만 중단하며 바깥 if가 RC를 받아 표시하므로, 부모 터미널에 errexit/nounset이 이미 있어도 이 블록의 실패로 부모가 종료되지 않는다. 부모 셸 옵션은 변경하지 않는다. heredoc 시작/끝과 if/fi를 제외한 내부 부분만 떼어 붙여넣지 않는다. env 전체·auth 파일을 출력하지 않는다.
 ```bash
-(
-set -u
+if bash --noprofile --norc <<'D22_READONLY_BASH'
+set +u
+set +e
+set +o pipefail
 umask 077
 D22_CA='/actual/absolute/path/fds-root-ca.crt'
 test -f "$D22_CA" || { echo 'STOP: public Root file missing'; exit 2; }
@@ -35,7 +38,8 @@ test "$d22_actual" = "$d22_expected" || { echo 'STOP: Root file hash mismatch'; 
 for d22_tool in openssl timeout awk sha256sum mktemp; do
   command -v "$d22_tool" >/dev/null || { echo "STOP: missing $d22_tool"; exit 2; }
 done
-d22_out="$(mktemp -d "$HOME/d22-harbor-ro-XXXXXXXX")" || exit 2
+test -n "${HOME:-}" && test -d "${HOME:-}" || { echo 'STOP: HOME directory unavailable'; exit 2; }
+d22_out="$(mktemp -d "${HOME}/d22-harbor-ro-XXXXXXXX")" || exit 2
 {
   TZ=Asia/Seoul date --iso-8601=seconds
   hostname -s
@@ -69,8 +73,17 @@ sha256sum context.txt status.txt server-chain.pem leaf.pem leaf-metadata.txt \
   expiry-check.txt tls-diagnostics.txt > SHA256SUMS
 ) || exit 4
 printf 'READONLY_CAPTURE=%s\nSTATE=CAPTURED_REVIEW_REQUIRED\n' "$d22_out"
-)
+D22_READONLY_BASH
+then
+  printf 'D22_READONLY_EXIT_CODE=0\n'
+else
+  d22_intake_rc=$?
+  printf 'D22_READONLY_EXIT_CODE=%s\n작업은 중단되었습니다. 현재 터미널은 유지됩니다.\n' "$d22_intake_rc"
+fi
 ```
+
+터미널 표시의 `D22_READONLY_EXIT_CODE`가 child 작업 결과다. 실패 RC2/3/4는 그대로 표시하고 부모 셸에는 비정상 종료를 전파하지 않는다. 자동화에서 부모 `$?`만으로 수집 성공을 판단하지 않는다.
+2026-10-04 로컬 검증: Bash 문법 RC0, 정상/CA누락/CA불일치/TLS실패/timeout/expiry실패 × 부모 strict 옵션 OFF/ON = 12/12 MOCK PASS. 모두 child RC 표시·부모 이후 명령 실행·부모 옵션 불변을 확인했다. 실제 현장 TLS Runtime은 NOT_RUN.
 
 정상 수집: TLS_RC0/FILTER_RC0, leaf 파싱·현재 유효성 성공, SAN에 harbor.fds.internal, 예상 Root로 이름/chain 검증 성공. 이는 **고정 CA를 명시한 endpoint TLS** 범위이며 OS 기본 trust/Podman/runtime 로그인·cold-pull PASS가 아니다.
 미응답/timeout/검증실패는 RC·진단을 보존하고 PENDING/FAIL 원인을 분류한다. insecure/HTTP·hostname bypass로 재시도하지 않는다. TLS1.3 stdin EOF/close 처리 실패도 있을 수 있으므로 nonzero RC만으로 인증서 불신을 확정하지 않는다. 공개 leaf/diagnostics가 있으면 검증오류·종료오류를 분리해 담당자가 검토하고 성공으로 덮어쓰지 않는다. 파일은 현장 개인 디렉터리에 보존하고 리뷰 후 공개 인증서/필요한 diagnostics만 인계한다. 오류로 checksum 생성 전 중단되면 해당 디렉터리를 같은 방식으로 로컬 해시해 실패 증적을 보존한다.
