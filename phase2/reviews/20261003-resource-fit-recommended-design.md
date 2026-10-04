@@ -120,6 +120,8 @@ ROSA 실제 runtime은 불필요하게 일찍 만들지 않고 Shared OCP 선검
 
 
 ### DNS·Registry·source·스토리지 보완 계약
+상세 [Private 관리 경로·양방향 DNS 계약 v1.0](20261004-private-management-bidirectional-dns-contract.md)을 추가했다(2026-10-04). Runner /32의 실제 routed next hop·관리 selector/return route와 DNS-OUT 신규 reverse-flow 예외는 미승인 후보다. HCP 공식 추가 PrivateLink SG 예시는 TCP443, 지원 기준 ROSA4.17.2 이상이며 기본 managed SG 수정/삭제 금지다. Phase1의6443을 복제하지 않고 선택 version/actual endpoint에서 재확인한다. #40/#48 기존 P1 IP-endpoint/조건부 구현 계약과 mandatory Private DNS subset의 책임·선행시점 차이는 authority 결정 PENDING이며, 전체 DNS scope/AC/일정은 변경하지 않는다.
+
 - 이름 보존 권장: Harbor/DB의 기존 승인 FQDN을 사용하며 On-Prem authoritative DNS로 outbound conditional forwarding. 정확 FQDN/zone/TLS SAN을 P1 원본에서 확인한다. Harbor를 IP로 바꾸거나 hosts 고정/Pod DNS의 임의 전면 변경으로 TLS/DNS 의존성을 숨기지 않는다. inbound domain과 outbound On-Prem zone을 분리해 forwarding loop를 부정시험한다.
 - outbound Resolver source는 endpoint ENI IP set이며 worker source-set과 다르다. 목적지 DNS52/53 TCP/UDP53만, 승인 return route/SA에 결박한다. inbound DNS source도 On-Prem resolver52/53이며 Runner source10.250.10.20과 다르다. 관리 selector 추가결정과 기존 DNS flow 모두 explicit tuple로 관리.
 - HCP CA 주입 우선 경로: 공식 `rosa create/edit cluster --registry-config-additional-trusted-ca <JSON-file>`; registry hostname를 key로 public CA PEM을 value로 작성. 정확 CLI/OCM version 지원과 생성 시 CA 입력을 먼저 pin한다. 이 예시는 실행 승인이 아니며 create/edit 미실행.
