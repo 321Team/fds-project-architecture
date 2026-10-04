@@ -170,7 +170,7 @@ EBS GB-month 단가는 공급자 prorating 기준으로 hour 환산하고 사용
 
 P1 live 입력 handoff: #43 본 작업(10-16~19)보다 먼저 #34 최초 Freeze 심사 전에 requests/limits·replica·probe·port·PVC/source revision을 수집한다. 제안 checkpoint는 10-12 18:00 KST이며 Lead 일정 확정은 PENDING; 기존 #43 start/end/AC를 앞당겨 변경한 것이 아니다. 이재환의 즉시 read-only 준비 의사를 소비한다. API access/RBAC 부족이면 원본 error/RC와 수집 가능 항목을 남기고 capacity HOLD. missing request/limit를 0으로 처리하지 않고 LimitRange/defaulted actual spec과 관측 peak를 구분한다.
 
-D22 입력표: [Harbor D22 입력 계약 후보](20261004-harbor-d22-input-contract.md). Git DNS/CSR와 P1 보고·정책을 연결하고 공개 CA/current leaf·Robot metadata·approved digest·실제 cold-pull을 별도 gate로 정리했다. D22 논리 판단은 #42 Lead, Code/mixed 및 evidence 독립 리뷰는 기존 governance를 따른다. 배포 TokenRequest audience와 Harbor Robot scope는 별도다.
+D22 입력표: [Harbor D22 입력 계약 후보](20261004-harbor-d22-input-contract.md). Git DNS/CSR와 P1 보고·정책을 연결하고 공개 Root CA·파일 hash/DER 지문·HCP JSON 후보, P1 Robot 계획·관측 앱 digest를 확보했다. current leaf·actual Robot metadata·approved P2 digest·실제 cold-pull은 별도 gate다. HBR Podman IF-09 보고 PASS와 #16 CI/CD BLOCK 표기는 scope 정합이 필요하며 OS/current CI/CD/HCP trust 전체 성공으로 확대하지 않는다. D22 논리 판단은 #42 Lead, Code/mixed 및 evidence 독립 리뷰는 기존 governance를 따른다. 배포 TokenRequest audience와 Harbor Robot scope는 별도다.
 
 D22는 logical registry/trust/credential/digest/fallback 계약을 Freeze 전 준비하고 실제 cluster endpoint/cold-pull 결과는 Basic Ready 이후 완성한다. 현재 10-15 Final 일정·AC를 임의 수정하지 않고 단계별 authority 차이를 기록한다.
 D23 전체 P1 기능을 P0로 변경하지 않는다. Private 접속의 mandatory DNS subset만 pre-create 계약에 포함한다.
