@@ -21,7 +21,7 @@
 | 기존 Runner / DNS | Runner 10.250.10.20, DNS 10.1.93.52/53 설계 입력 | 위치 보존. 실제 권한·route·TLS/readiness 재검증 |
 | Shared OCP | 공용 multi-tenant Lab | namespace-local arbitrary UID 실제 Running/Ready 선검증; ROSA 인수 대체 불가 |
 
-On-Prem의 CPU/RAM/스토리지 현재 inventory와 승인 application requests/limits의 완성본은 이번 수집에서 확보하지 못했다. 이미 가진 자원의 용량을 임의 수치로 기입하지 않는다. #43 최신 댓글은 권위 있는 portable deployment base가 아직 없다고 기록한다. fds-msa 코드 검색 무결과도 요청량이 0이라는 근거가 아니다.
+On-Prem의 CPU/RAM/스토리지 현재 inventory와 P2 최종 전체 application inventory는 미확보다. 다만 [#15 9/30 Lead 확정](https://github.com/321Team/fds-project-baseline/issues/15#issuecomment-5910524397)과 [승인 부하 기준 v2](https://github.com/321Team/fds-project-baseline/issues/15#issuecomment-5885861552)에서 기존 두 앱(a7093136/5e2a081c)의 resource baseline을 확보했다: 앱 컨테이너당 requests250m/256Mi, limits500m/512Mi, 각3 replicas. 두 앱6컨테이너 산술 requests합계1.5CPU/1536Mi, limits합계3CPU/3072Mi이며 전체 플랫폼/sidecar/init/배포surge 요청량이 아니다. 승인된 P1 자원기준을 미승인으로 되돌리지 않는다. 새 이미지 회귀와 P2 actual spec/replica/Pod overhead·platform/allocatable/N-1 확인은 별도이며 이 산술 소계만으로 sizing PASS를 선언하지 않는다. 이미 가진 자원의 용량을 임의 수치로 기입하지 않는다. #43 최신 댓글은 권위 있는 portable deployment base가 아직 없다고 기록한다. fds-msa 코드 검색 무결과도 요청량이 0이라는 근거가 아니다.
 
 ## 3. 담당자가 검토할 단일 입력안
 | 항목 | 권장 입력 | 승인/검증 경계 |
@@ -170,7 +170,7 @@ EBS GB-month 단가는 공급자 prorating 기준으로 hour 환산하고 사용
 
 P1 live 입력 handoff: #43 본 작업(10-16~19)보다 먼저 #34 최초 Freeze 심사 전에 requests/limits·replica·probe·port·PVC/source revision을 수집한다. 제안 checkpoint는 10-12 18:00 KST이며 Lead 일정 확정은 PENDING; 기존 #43 start/end/AC를 앞당겨 변경한 것이 아니다. 이재환의 즉시 read-only 준비 의사를 소비한다. API access/RBAC 부족이면 원본 error/RC와 수집 가능 항목을 남기고 capacity HOLD. missing request/limit를 0으로 처리하지 않고 LimitRange/defaulted actual spec과 관측 peak를 구분한다.
 
-D22 입력표: [Harbor D22 입력 계약 후보](20261004-harbor-d22-input-contract.md). Git DNS/CSR와 P1 보고·정책을 연결하고 공개 Root CA·파일 hash/DER 지문·HCP JSON 후보, P1 Robot 계획·관측 앱 digest를 확보했다. current leaf·actual Robot metadata·approved P2 digest·실제 cold-pull은 별도 gate다. HBR Podman IF-09 보고 PASS와 #16 CI/CD BLOCK 표기는 scope 정합이 필요하며 OS/current CI/CD/HCP trust 전체 성공으로 확대하지 않는다. D22 논리 판단은 #42 Lead, Code/mixed 및 evidence 독립 리뷰는 기존 governance를 따른다. 배포 TokenRequest audience와 Harbor Robot scope는 별도다.
+D22 입력표: [Harbor D22 입력 계약 후보](20261004-harbor-d22-input-contract.md), [현장 read-only 입력 수집](../runbooks/20261004-harbor-d22-readonly-intake.md). Git DNS/CSR와 P1 보고·정책을 연결하고 공개 Root CA·파일 hash/DER 지문·HCP JSON 후보, P1 Robot 계획·관측 앱 digest를 확보했다. current leaf·actual Robot metadata·approved P2 digest·실제 cold-pull은 별도 gate다. HBR Podman IF-09 보고 PASS와 #16 CI/CD BLOCK 표기는 scope 정합이 필요하며 OS/current CI/CD/HCP trust 전체 성공으로 확대하지 않는다. D22 논리 판단은 #42 Lead, Code/mixed 및 evidence 독립 리뷰는 기존 governance를 따른다. 배포 TokenRequest audience와 Harbor Robot scope는 별도다.
 
 D22는 logical registry/trust/credential/digest/fallback 계약을 Freeze 전 준비하고 실제 cluster endpoint/cold-pull 결과는 Basic Ready 이후 완성한다. 현재 10-15 Final 일정·AC를 임의 수정하지 않고 단계별 authority 차이를 기록한다.
 D23 전체 P1 기능을 P0로 변경하지 않는다. Private 접속의 mandatory DNS subset만 pre-create 계약에 포함한다.
