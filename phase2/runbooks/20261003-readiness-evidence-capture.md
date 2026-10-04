@@ -1,5 +1,5 @@
 # Phase 2 조회·증적 수집 — CloudShell 1인 실행 + ROSA 콘솔 관측
-기준: 2026-10-03 21:00 KST. AI: CODEX_ASSISTED.
+기준: 2026-10-03 21:00 KST. 2026-10-04 후속: collector guard/JSON format·timeout 증적 보존 수정. AI: CODEX_ASSISTED.
 상태: EXECUTION_CANDIDATE / AWS 실제 실행 NOT_RUN / 독립 REVIEW PENDING / Freeze HOLD.
 연계: [하영 추가 의견](https://github.com/321Team/fds-project-architecture/pull/8#issuecomment-5968593648), #35/#38/#34.
 이번 PR8 후속 조회에 한정한 실행안이며 개인 Codex 지침을 팀 공용 정책으로 승격하지 않는다.
@@ -14,7 +14,7 @@
 
 ## 2. AWS 고정 조회 범위
 [수집 script](phase2-readiness-capture.py)의 검토 대상 source commit:
-`f140ddcda1fbb35421c6d9323d4376ab77a60a12` (실행파일 SHA256도 capture.json에 기록).
+`c2451973ad99ea9d7192e7f6b0d1d73b576dcf56` (실행파일 SHA256도 capture.json에 기록).
 명령은 CLI args 배열로 전달하고 shell 실행/외부 command 입력을 받지 않는다.
 
 | 입력 | 고정 조회 | 해석 |
@@ -32,18 +32,18 @@ EIP4와 실제추가 필요·삭제예정 NAT 상태·role존재·quota 적용�
 
 ## 3. 실행 순서와 정상/실패 판정
 실행 위치: 예상 역할로 전환한 ap-northeast-2 CloudShell. AWS CLI/Python3가 이미 사용 가능해야 한다.
-1. source SHA가 위 값인 [원본 script](https://github.com/321Team/fds-project-architecture/blob/f140ddcda1fbb35421c6d9323d4376ab77a60a12/phase2/runbooks/phase2-readiness-capture.py)를 읽고 CloudShell editor에 동일 내용으로 `phase2-readiness-capture.py` 저장한다. GitHub 개인토큰을 shell history나 Issue에 넣지 않는다. CLI설치/새credential 파일 생성 불필요.
+1. source SHA가 위 값인 [원본 script](https://github.com/321Team/fds-project-architecture/blob/c2451973ad99ea9d7192e7f6b0d1d73b576dcf56/phase2/runbooks/phase2-readiness-capture.py)를 읽고 CloudShell editor에 동일 내용으로 `phase2-readiness-capture.py` 저장한다. GitHub 개인토큰을 shell history나 Issue에 넣지 않는다. CLI설치/새credential 파일 생성 불필요.
 2. root가 아닌 예상 역할 세션인지 확인한 상태에서 아래 실행. 파일을 편집했다면 original source로 주장하지 말고 변경분 검토 후 별도 revision 기록.
 ```bash
-python3 phase2-readiness-capture.py --source-ref f140ddcda1fbb35421c6d9323d4376ab77a60a12
+python3 phase2-readiness-capture.py --source-ref c2451973ad99ea9d7192e7f6b0d1d73b576dcf56
 ```
 3. 출력 DIRECTORY는 실행마다 새로 생성된다. 권한 umask077/raw dir0700, 기존경로 덮어쓰기 없음. 명령별 stdout 원문 bytes, stderr 원문 bytes, RC·command·KST와 CLIversion/scriptSHA/sourceSHA를 보존한다.
 4. `manifest.json`에는 raw/capture 파일별 path·size·SHA256, 콘솔 출력에는 manifest 자체 SHA256을 별도로 기록한다. manifest는 자기자신을 포함하지 않는다. 최종 transferred bytes에서 size/hash를 다시 확인한다.
 
 정상: RC0 / AWS_READONLY_CAPTURE_COMPLETE = 고정조회 응답을 수집했다는 뜻만. architecture/account준비·Runtime PASS 아님.
-부분 실패: RC2 / AWS_READONLY_CAPTURE_PARTIAL, 실패/거부명령 목록을 확인. 성공원본/RC/denial을 함께 보존하고 해당입력은 PENDING.
+부분 실패: RC2 / AWS_READONLY_CAPTURE_PARTIAL, 실패/거부명령과 INVALID_RESPONSES 목록을 확인. AWS RC0이어도 stdout이 잘못된 JSON 또는 object/list가 아니면 capture는 PARTIAL이다. 원래 AWS RC와 bytes를 보존하며 이 format 검사는 실제 quota 값/권한/readiness 판정을 대체하지 않는다. 성공원본/RC/denial을 함께 보존하고 해당입력은 PENDING.
 identity/source-ref 실패: STOP, readiness 추가조회 미실행. 최초STS조회는 guard를 위해 수행될 수 있다. root로 바꾸거나 권한을 넓혀 재시도하지 않는다.
-각 AWS호출 timeout35초, connect10/read20초; timeout/CLI오류는 실패행으로 기록한다. AWS write를 수행하지 않아 infrastructure rollback은 필요하지 않다. 남은 비용자원을 없앴다고 해석하지 않는다.
+각 AWS호출 timeout35초, connect10/read20초; timeout/CLI오류는 실패행으로 기록한다. timeout의 partial stdout/stderr bytes도 보존한다. AWS write를 수행하지 않아 infrastructure rollback은 필요하지 않다. 남은 비용자원을 없앴다고 해석하지 않는다.
 스크립트 재실행은 새 directory를 만들므로 기존원본 보존. 로컬 증적 cleanup은 승인된 소유경로만 대상으로 하고, 업로드·수신해시·보존정책 확인 전 삭제하지 않는다.
 
 ## 4. ROSA 콘솔 별도 수집표
@@ -70,7 +70,7 @@ identity/source-ref 실패: STOP, readiness 추가조회 미실행. 최초STS조
 
 ## 6. 이번 작성/검증과 남은 작업
 STATIC: Python AST, 고정 AWSread목록/guard/출력·민감정보범위 점검 PASS.
-MOCK: root/foreignaccount/unapprovedmember STOP; 정상수집; GetRoleDENIED부분실패·manifest size/hash 무결성 5경로 PASS. 실제 AWS query/permission/state PASS 아님.
+MOCK: 기존5경로 결과는 원래 source 범위. 2026-10-04 collector 수정에서는 root/foreignaccount/unapprovedmember + non-object identity/non-string ARN의 추가조회 STOP, 정상수집/manifest, GetRoleDENIED, RC0 malformed/scalar JSON, timeout partial bytes 보존, 고정read목록의11경로 PASS. [재현 가능한 offline 시험](test_phase2_readiness_capture.py): `python3 test_phase2_readiness_capture.py` (동일 디렉터리에 collector 필요, subprocess mock만 사용). 테스트 명령은 실제 AWS를 실행하지 않는다. 실제 AWS query/permission/state PASS 아님.
 CI NOT_RUN / AWS 실제추가조회 NOT_RUN / ROSA Runtime NOT_RUN / 독립 REVIEW PENDING / MERGE·canonical PUBLICATION NOT_RUN.
 다음: 담당1인 실제 AWS수집→ROSA console 관측→기대quota/capacity/support와 대조→raw intake/review→#35/#38에 결과와 부족입력 인계.
 아직 필요한 full서울단가/교육장한도·기간·gross/accrued·source model/code/SLA·P1live capacity·UID실행은 이capture로 자동해소되지 않는다. Freeze HOLD 유지.
