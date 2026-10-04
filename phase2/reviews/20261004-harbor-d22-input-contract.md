@@ -47,6 +47,14 @@ IF-09 공식 시험 digest `7a3b263c938493c827d8295e64f23d9386ffcbea75516ea03a6b
 **trust 상태 정정**
 10-02 HBR Lead AC02 PASS 및 보조 Run Push/Pull·wrong credential negative 성공 기록이 있으므로 Runner 모든 trust가 FAIL이라는 단정은 사용하지 않는다. 10-03 #16 BLOCK 표기와 scope 차이를 해소해야 한다. HBR Podman IF-09=보고 PASS, D19 OS+Runtime 전체/current CI/CD=미검증, ROSA=NOT_RUN. 이번에 actual live host 재시험은 수행하지 않았다.
 
+### 1.2 승인 근거 후속 및 현장 수집
+[D19 #64](https://github.com/321Team/fds-project-baseline/issues/64)는 TLS 설계 승인/Done이며 current leaf 설치·consumer trust actual 완료와 구분한다.
+[#110 결정 확정](https://github.com/321Team/fds-project-baseline/issues/110#issuecomment-5856632297) 및 [Review Owner 추가조건 확인](https://github.com/321Team/fds-project-baseline/issues/110#issuecomment-5855626610)에서 Wolfi/apko Python3.13 공급망 선택과 구현 경계가 승인됐다. 이를 다시 결정승인 대기로 기록하지 않는다. 최종 on-prem Build/Scan/Harbor remote digest/배포·P2 승인은 아직 별도다.
+기존 P1 두 digest는 [#15 9/30 resource baseline 확정](https://github.com/321Team/fds-project-baseline/issues/15#issuecomment-5910524397)의 시험 대상이며 두 앱 각3 replicas, container requests250m/256Mi·limits500m/512Mi다. 이 자원 승인은 P2 보안·arbitrary UID·N-1 capacity 승인과 같지 않다. #110의 당시 python3.12 HIGH44 보고를 각각의 digest에 대한 current scan이라고 단정하지 않는다.
+#110의 10-05 전환 목표는 역사 기록이다. 최신 #15는 #52의 10-05 비근무 일정과 별도 날짜확인을 명시하므로 이번에 현장 실행일을 새로 확정하지 않는다.
+
+[현장 read-only 수집 runbook](../runbooks/20261004-harbor-d22-readonly-intake.md)에 current public leaf/chain·metadata 수집 명령, Robot UI 필드-only 인계, 최종 build/scan/digest 승인 연결표와 실패 중단 기준을 준비했다. 현 세션에는 현장 host SSH/인증 경로가 없어 actual 명령 실행은 NOT_RUN이다. 기존 P1 타 세션 Runtime과 별도로 조회 결과를 소비하며 변경·재시험을 중복하지 않는다.
+
 ## 2. D22 필수 12개 입력
 | # | 계약 후보/채울 값 | 현재 상태·담당 입력 |
 |---:|---|---|
