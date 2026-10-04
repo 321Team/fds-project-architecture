@@ -55,13 +55,38 @@ IF-09 공식 시험 digest `7a3b263c938493c827d8295e64f23d9386ffcbea75516ea03a6b
 
 [현장 read-only 수집 runbook](../runbooks/20261004-harbor-d22-readonly-intake.md)에 current public leaf/chain·metadata 수집 명령, Robot UI 필드-only 인계, 최종 build/scan/digest 승인 연결표와 실패 중단 기준을 준비했다. 현 세션에는 현장 host SSH/인증 경로가 없어 actual 명령 실행은 NOT_RUN이다. 기존 P1 타 세션 Runtime과 별도로 조회 결과를 소비하며 변경·재시험을 중복하지 않는다.
 
+### 1.3 current Harbor leaf 현장 readback — 2026-10-04
+사용자 제공 터미널 출력, 관측시각 **2026-10-04T15:37:03+09:00**.
+host=cicd-runner01, user=server01_cicd-runner, OpenSSL3.5.8 (library3.5.8).
+실제 실행은 대화 제공본: child Bash+if, CA 실제 경로/가독성 확인·도구 사전 검사, capture 경로 조기 출력 보정. source 전체파일 hash는 미수신이므로 PR8의 원문 그대로 실행했다고 단정하지 않는다.
+
+| 항목 | 실제 제공값/판정 범위 |
+|---|---|
+| capture path | /home/server01_cicd-runner/d22-harbor-ro-34OMzIfp |
+| 명시한 Root PEM | /home/server01_cicd-runner/.config/containers/certs.d/10.1.93.54/ca.crt |
+| Root 파일 SHA256 | 20ddfa5e92c346aaf46fc30179fbc0b069e256effd2615a9f4308a8fe719053f, 기대값 일치 |
+| TLS/FILTER RC | 0 / 0; fixed IP10.1.93.54:443에 SNI 및 verify_hostname=harbor.fds.internal, verify_return_error + 지정Root 사용 |
+| Subject | C=KR, O=FDS, OU=Harbor, CN=harbor.fds.internal |
+| Issuer | C=KR, O=FDS, OU=Project PKI, CN=FDS Project Root CA2026 |
+| Leaf serial | 1000 (OpenSSL hex 표기) |
+| 유효기간 UTC | 2026-09-15 04:00:08 ~ 2027-09-15 04:00:08 |
+| Leaf DER SHA256 지문 | 61617af3574f37c70a2d9c7f284a75f82c844ae3eaf599cb3d0ec649126ebeaf |
+| SAN | DNS harbor.fds.internal / DNS harbor01 / IP10.1.93.54 |
+| 현장 무결성 | SHA256SUMS에 포함된 context/status/server-chain/leaf/metadata/expiry/diagnostics 7개 모두 성공 |
+| 추가 출력 | Certificate will not expire; D22_RESULT_READBACK=OK |
+
+판정: **PINNED_CA_FQDN_TLS=PASS_USER_READBACK / FIELD_SHA256_CHECK=PASS_7_USER_READBACK**.
+이는 제공된 명령/출력 범위의 정상 CA·이름·chain 및 현재 유효성 검사다. IP 직접검증은 별도 -verify_ip 실행을 하지 않았으므로 SAN 존재만 인정한다. fixed IP 접속이라 DNS resolution 성공 증적도 아니다.
+원본 PEM/diagnostics/SHA256SUMS 전체파일의 수신 및 assistant 재해시·독립 evidence 리뷰는 **PENDING**. 사용자 제공 출력의 현장 hash 성공과 원본 직접검증을 구분한다.
+OS 기본 trust, Podman current login/pull, Robot권한/만료/rotation, ROSA worker trust/cold-pull, 최종 APP approved digest는 별도 잔여다. D22 Final/Freeze 및 P1 AC 전체를 PASS로 승격하지 않는다.
+
 ## 2. D22 필수 12개 입력
 | # | 계약 후보/채울 값 | 현재 상태·담당 입력 |
 |---:|---|---|
 | 1 | 기존 On-Prem Harbor primary 조건부 재사용 | 권욱 #42 Lead 결정 PENDING |
 | 2 | harbor.fds.internal:443 / fds / 앱별 repository; exact repo 목록은 portable base 및 approved image 연결 | 이름·프로젝트는 P1 근거 있음; P1 앱 repository/digest는 1.1 확보; P2 approved 목록 재환/권욱 PENDING |
 | 3 | Runner push와 ROSA worker pull principal 분리. P2 전용 project pull-only Robot 제안; 기존 robot$worker 공유 자동승인 금지. Push principal은 필요한 project push+pull만 | 기존 principal/만료·rotation 계획은 1.1 확보; actual metadata 및 P2 책임 입력 PENDING |
-| 4 | 검토된 공개 issuing/root CA bundle, hostname→PEM JSON을 HCP additional trusted CA 입력으로 고정; leaf 이름/chain/만료 검증 | 공개 Root/hash·JSON 후보 확보; 하영 exact 지원·current leaf, 권욱 P2 trust 수용 PENDING |
+| 4 | 검토된 공개 issuing/root CA bundle, hostname→PEM JSON을 HCP additional trusted CA 입력으로 고정; leaf 이름/chain/만료 검증 | 공개 Root/hash·JSON 후보 확보; current leaf는1.3 PASS_USER_READBACK. 원본 intake·exact HCP 지원·P2 trust 수용 PENDING |
 | 5 | approved scan/provenance와 동일 image@sha256 digest 배포. mutable tag만으로 승인/rollback 금지; index와 architecture별 manifest 구분 | 재환 APP exact digest/scan/lineage PENDING |
 | 6 | Runner10.250.10.20→Harbor10.1.93.54 TCP443, host/Podman 각 trust 및 push 인증 확인 | HBR Podman IF09 보고 PASS; OS/current CI/CD 및 allowlist readback 하영 PENDING |
 | 7 | 각 승인 ROSA worker actual node-pull source→Harbor443, VPN/FORWARD/return 및 HCP node trust | #38 inventory, #37 transport, #42 Harbor 소비; 생성 전 tuple 규칙/생성 후 IP 증적 |
