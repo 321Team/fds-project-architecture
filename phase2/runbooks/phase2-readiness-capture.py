@@ -44,8 +44,8 @@ def invoke(args):
     try:
         p = subprocess.run(cmd, capture_output=True, timeout=35)
         return cmd, p.returncode, p.stdout, p.stderr
-    except subprocess.TimeoutExpired:
-        return cmd, 124, b"", b"CAPTURE_TIMEOUT; response not available"
+    except subprocess.TimeoutExpired as exc:
+        return cmd, 124, exc.stdout or b"", exc.stderr or b"CAPTURE_TIMEOUT; response not available"
     except OSError as exc:
         return cmd, 127, b"", ("CLI_EXECUTION_FAILED: " + type(exc).__name__).encode()
 
@@ -62,6 +62,8 @@ def main():
         ident = json.loads(stdout)
     except (ValueError, TypeError):
         raise SystemExit("STOP: invalid identity response.")
+    if not isinstance(ident, dict) or not isinstance(ident.get("Arn"), str):
+        raise SystemExit("STOP: identity must be an object with a string ARN.")
     prefix = "arn:aws:sts::" + ACCOUNT + ":assumed-role/" + ROLE + "/"
     arn = ident.get("Arn", "")
     if ident.get("Account") != ACCOUNT or not arn.startswith(prefix):
@@ -78,7 +80,15 @@ def main():
         suffix = ".stdout.txt" if name == "aws-cli-version" else ".stdout.json"
         (raw / (name + suffix)).write_bytes(out)
         (raw / (name + ".stderr.txt")).write_bytes(err)
+        response_format = "TEXT_VERSION" if name == "aws-cli-version" else "NOT_PARSED_NONZERO_RC"
+        if name != "aws-cli-version" and result_rc == 0:
+            try:
+                parsed = json.loads(out)
+                response_format = "JSON_CONTAINER_VALID" if isinstance(parsed, (dict, list)) else "INVALID_JSON_OR_SHAPE"
+            except (ValueError, TypeError):
+                response_format = "INVALID_JSON_OR_SHAPE"
         rows.append({"id": name, "command": command, "rc": result_rc,
+                     "response_format": response_format,
                      "captured_kst": datetime.now(KST).isoformat(),
                      "scope": "AWS_READ_ONLY; NOT_ROSA_RUNTIME"})
     save("caller", cmd, rc, stdout, stderr)
@@ -88,10 +98,12 @@ def main():
         command, result_rc, out, err = invoke(arguments)
         save(name, command, result_rc, out, err)
     denied = [r["id"] for r in rows if r["rc"] != 0]
-    status = "AWS_READONLY_CAPTURE_PARTIAL" if denied else "AWS_READONLY_CAPTURE_COMPLETE"
+    invalid = [r["id"] for r in rows if r["response_format"] == "INVALID_JSON_OR_SHAPE"]
+    incomplete = bool(denied or invalid)
+    status = "AWS_READONLY_CAPTURE_PARTIAL" if incomplete else "AWS_READONLY_CAPTURE_COMPLETE"
     script_sha = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     summary = {"status": status, "source_ref": args.source_ref, "script_sha256": script_sha,
-               "region": REGION, "commands": rows, "failed_or_denied": denied,
+               "region": REGION, "commands": rows, "failed_or_denied": denied, "invalid_responses": invalid,
                "interpretation": "Capture completeness only; architecture/account readiness not adjudicated.",
                "ROSA_VERSION_TYPE_SUPPORT": "NOT_COLLECTED_AWS_API_IS_NOT_ROSA_AUTHORITY",
                "ROSA_RUNTIME": "NOT_RUN", "RESOURCE_WRITE": "NOT_RUN",
@@ -107,8 +119,8 @@ def main():
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(json.dumps({"STATUS": status, "DIRECTORY": str(base),
         "MANIFEST_SHA256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
-        "FAILED_OR_DENIED": denied, "PUBLICATION": "NOT_RUN"}, indent=2))
-    return 2 if denied else 0
+        "FAILED_OR_DENIED": denied, "INVALID_RESPONSES": invalid, "PUBLICATION": "NOT_RUN"}, indent=2))
+    return 2 if incomplete else 0
 
 if __name__ == "__main__":
     raise SystemExit(main())
