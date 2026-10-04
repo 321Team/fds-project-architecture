@@ -1,5 +1,5 @@
 # Phase 2 단일 권장 구성 — 자원·R/I/T/P 기준
-기준시각: 2026-10-03 21:00 KST. 리뷰 반영 revision 3 (원본 후보 HEAD 9850a32, 이전 revision2 c421733). AI: CODEX_ASSISTED.
+기준시각: 2026-10-04 13:42 KST. 리뷰 반영 revision 4 (수정 전 조회 HEAD 658f0d14d74034ee621a2a509aae6b9e0d4f07a8; 원본 후보 9850a32, revision2 c421733). AI: CODEX_ASSISTED.
 상태: RECOMMENDED_CANDIDATE / DESIGN_REVIEW=CHANGES_REQUIRED / ARCHITECTURE_FREEZE=HOLD.
 이 문서는 담당자가 선택지를 다시 설계하지 않도록 제공하는 구체 입력안이다. 신규 제안은 Decision 승인값이 아니며, 독립 리뷰와 #34/#38 authority 반영 전 구현에 소비하지 않는다.
 
@@ -39,7 +39,7 @@ On-Prem의 CPU/RAM/스토리지 현재 inventory와 승인 application requests/
 | ROSA version | 해당 계정/리전에서 HCP 생성 가능한 supported stable exact version 1개 pin | 현재 목록을 확보하지 못했으므로 숫자를 발명하지 않음. version별 PrivateLink external access SG 지원 등 확인 |
 | Machine/Pod/Service CIDR | machine CIDR=10.20.0.0/16 후보; Pod/Service CIDR/host prefix는 선택한 HCP version/workflow의 read-only 지원 기본값을 수집해 명시 pin | machine CIDR/VPC 정합과 모든 On-Prem/Runner/기존 VPC overlap 검사. 지원 기본값 미조회이므로 숫자 발명 금지; 정확 값은 pre-create 입력 |
 | Relay | 기존 t3.medium, 10.20.110.10, AMI 위 값, gp3 40 GiB encrypted, EIP1 | 확정값 유지; public SSH 금지, management SSM 우선; source-dest-check=false, auto IPv4 off. peer는 explicit IKE ID로 인증; dynamic public source용 outer UDP500/4500 ingress 0.0.0.0/0은 D21 위험수용 계약 참조 |
-| DB source 모델 | 최소 per-worker source-set + 엄격히 제한된 inventory reconciliation을 우선 설계검토 | 사람의 매 IP 승인이 아니라 source 생성·폐기 규칙과 권한을 사전 승인하는 신규 후보. 구현/독립 리뷰 전 자동 grant 금지; 실제 source 관측과 recovery SLA 검증 전 HOLD |
+| DB source 모델 | 최소 per-worker source-set + 승인 규칙에 따른 반자동 reconciliation을 우선 설계검토 | 매 IP 정책 재승인 대신 사전 승인 규칙과 사람이 시작하는 검증·적용. 상시 다중 도메인 쓰기 자격증명은 두지 않는 후보. 실행 주체·단기/회수 가능한 최소 권한은 SEC 결정; 구현/독립 리뷰·SLA 수용 전 HOLD |
 | Registry | 기존 Harbor primary 재사용 권장, approved immutable digest와 TLS/pull-only robot | D22 미확정. HCP registry-config-additional-trusted-ca에 hostname→공개 CA PEM JSON, pull-only robot secret은 승인 앱 namespace/SA 범위. TLS/firewall/audience 잔여 해소 및 실제 cold-pull 전 READY 아님; insecure 우회 금지 |
 | Workload | 하나의 Kubernetes base + OpenShift overlay; 동일 API/engine business contract | image digest, probes/ports, requests/limits를 실제 source와 연결 |
 | State | network / vpn / rosa-prereq / rosa-runtime; S3 native use_lockfile=true | exact bucket/key/권한/보존을 plan 전 고정; Secret 원문 저장·출력 금지 |
@@ -69,10 +69,37 @@ P1/P2 동일 DB 시험은 test ID/account/mutation window/migration owner/expect
 - selector 10.1.93.0/24↔10.20.0.0/16은 transport envelope; application allowlist가 아니다.
 - gateway inner SNAT/masquerade/DNAT 금지. Internet NAT와 CNI 관측 source-transform을 별도 계약으로 기록.
 - node-source 공유 시 IP alone은 API/engine을 구별 못한다. 모든 additive NetworkPolicy와 DB 인증을 함께 검증한다.
-- source-set은 승인 cluster/pool/AZ/subnet/ENI provenance와 actual source mapping으로 생성한다. 태그만으로 승인하지 않는다. 기존 매 IP 사람 승인 절차는 자동 worker 교체와 충돌하므로 대체 후보: source 분류·갱신 규칙/최대 cardinality/overlap 수/권한을 사전 독립 승인→inventory reconciliation→DB/gateway/Harbor(각 actor·port 별도) 동기화 readback→업무 검증→퇴역 source 제거. 구현 미완료 상태에서 자동 grant는 금지한다. 미분류 IP/과대 set/API 오류/동기화 불일치 시 fail-closed와 alert; broad /24 자동 fallback 금지.
-- 갱신 platform inventory producer=#38, network/VPN 정책=#37, DB/Harbor 소비·검증=#47와 #42. 이재환 1인의 수동 IP 승인에 복구를 의존하지 않도록 운영 권한/대체 담당/실패복구와 최대 갱신·서비스 복구시간(SLA)을 #38/#47에서 Freeze 전 승인한다. SLA 수치와 자동화 구현은 PENDING. source revision/전후 diff/expiry/raw RC/negative test를 보존한다. autorepair를 무조건 끄거나 지원 업그레이드를 차단해 해결하지 않는다.
+- source-set은 승인 cluster/pool/AZ/subnet/ENI provenance와 actual source mapping으로 생성한다. 태그만으로 승인하지 않는다. 기존 매 IP 사람 승인 절차는 자동 worker 교체와 충돌하므로 대체 후보: source 분류·갱신 규칙/최대 cardinality/overlap 수/권한을 사전 독립 승인→승인 실행자가 read-only inventory와 정책 diff 검증→실행 때만 제한된 권한으로 도메인별 적용→DB/gateway/Harbor(각 actor·port 별도) 동기화 readback→업무 검증→퇴역 source 제거. 구현 미완료 상태에서 자동 grant는 금지한다. 미분류 IP/과대 set/API 오류/동기화 불일치 시 fail-closed와 alert; broad /24 자동 fallback 금지.
+- 갱신 platform inventory producer=#38, network/VPN 정책=#37, DB/Harbor 소비·검증=#47와 #42. 이재환 1인의 수동 IP 승인에 복구를 의존하지 않도록 운영 권한/대체 담당/실패복구와 최대 갱신·서비스 복구시간(SLA)을 #38/#47에서 Freeze 전 승인한다. SLA 수치와 재맞춤 구현·실행자·자격증명 범위의 SEC 결정은 PENDING. 반자동 방식도 실행자 응답 지연을 제거하지 않으므로 대체 담당·관측/알림·최대 지연의 수용이 필수이며, 이를 만족하지 못하면 지원 EgressIP 또는 다른 source 모델을 재검토한다. source revision/전후 diff/expiry/raw RC/negative test를 보존한다. autorepair를 무조건 끄거나 지원 업그레이드를 차단해 해결하지 않는다.
 - Harbor443은 D22 승인 후 node image-pull source에만. Private DNS/API는 별도 승인 관리 flow이며 DB envelope에 몰래 포함하지 않는다.
 - SELinux Enforcing/firewall/TLS 유지. SA down/plaintext/new-source/engine/미허용 port 부정시험과 Pod 재배치/worker replacement/VPN복구 후 정합 시험 필수.
+
+### source 재맞춤 실행·권한 결정안 — revision 4 신규 제안
+재환 [2026-10-04 재리뷰](https://github.com/321Team/fds-project-architecture/pull/8#pullrequestreview-5403923382)의 새 지적 1·2에 대한 후보다. **실행 주체·자격증명 범위 = SEC 결정 PENDING**이며, 기존 역할/AC/담당을 변경하거나 새 쓰기 권한을 부여한 기록이 아니다.
+
+| 방식 | 판단 | 채택 조건 |
+|---|---|---|
+| 승인 규칙 + 사람이 시작하는 반자동 적용 | 우선 권장 후보. 정책 규칙을 매 IP마다 재승인하지 않되 실행별 inventory/diff를 검증한다 | 감지·대기·적용·readback·업무복구의 최대시간, 실행자와 대체자, 접근 만료/회수 방법을 Freeze 전에 수용 |
+| 상시 자동 reconcile | 후속 대안. 여러 도메인에 걸친 상시 쓰기 권한과 장애 위험 증가 | 별도 SEC 결정, 최소 권한/감사/실패복구와 코드 인수 및 사람이 없어도 복구해야 하는 요구 확인 |
+| HCP 지원 EgressIP/전용 subnet | 지원·비용·source 분리 조건 확인 후 대안 비교 | 실제 버전 지원·failover 검증; node cold-pull source 별도. 기존 /24 자동 허용 금지 |
+
+실행 위치 후보는 기존 승인 운영 호스트 ansible01이다. 연결·전용 계정·sudo/SSM 가능 여부는 미확인이고 설치/접속 권한을 승인한 것이 아니다. FDS-ReadOnly-Audit는 AWS metadata 조회에만 사용하며 SG/host/DB 쓰기 권한을 추가하지 않는다. 하나의 계정에 모든 도메인의 root·DB superuser·AWS 관리자 권한을 모으지 않는다.
+
+1. 도구는 exact source SHA, 승인 규칙 revision, cluster/pool/AZ/subnet/ENI inventory, actor별 source/port/만료를 입력으로 받고 diff/검증까지 read-only로 생성한다. inventory가 오래됐거나 provenance/RC/최대 cardinality가 어긋나면 적용하지 않는다.
+2. 실행 시작 직전 inventory와 target 정책 revision을 다시 비교하고, drift이면 STOP. 실행자는 승인된 domain adapter만 호출한다. AWS는 별도 검토한 제한된 임시 역할/세션, Linux는 승인 명령 wrapper와 대상 파일/규칙만 다루는 제한 권한을 후보로 삼는다. 기존 SSH 키 사용·sudo 부여·세션 만료 수치는 SEC 결정 없이 확정하지 않는다.
+3. 각 domain owner가 자기 영역의 backup→syntax/precheck→적용→readback을 수행한다. 일부 실패 시 후속 grant/퇴역 제거를 중단하고, 이번 실행의 변경을 도메인별로 추적해 안전한 이전 revision으로 복구한다. drift가 있는 대상을 맹목적으로 전체 덮어쓰지 않는다. rollback 실패·정책 불일치는 fail-closed+경보, 운영자 수동 복구 대상으로 남긴다.
+4. positive/engine·미승인 source negative·동일 DB 정합 확인 뒤 퇴역 source를 제거하고 readback한다. 겹침 수/만료를 제한하며 실패를 이유로 broad subnet 허용하지 않는다. 실행 권한·잔여 세션/임시 grant의 회수 확인도 종료조건이다.
+5. 시간 증적은 교체 감지→담당 응답→inventory/diff 확정→domain 적용/readback→업무복구→퇴역/권한 회수로 나눈다. 계획 교체 창과 비계획 autorepair 모두 시험한다. SLA 숫자는 담당 수용 전 발명하지 않는다.
+
+구현과 소비 시험의 분리안(신규 세부 분담 제안, 각 Lead 수용 PENDING):
+| 산출물 | 구현 책임 제안 | 소비·검증 |
+|---|---|---|
+| inventory producer·공통 diff/검증/실행 조정 도구 | #38 이하영 Lead / 이권욱 Support, 기존 역할 안의 세부 분담 제안 | #37/#47/#42가 provenance·cardinality·actor 구분·실패 RC를 소비 |
+| Relay/vpn-gw forwarding adapter | #37 이재환 Lead | #47 승인 DB path/negative 시험, 정책 readback |
+| DB 적용 adapter | #47 이재환 Lead, 기존 DB 권한 주체와 범위 확인 | #47 소비 측 readback·DB 정합/negative 시험은 adapter 작성 검증과 구분 |
+| Harbor source adapter·D22 trust 입력 | #42 이권욱 Lead, Harbor 권한 주체와 범위 확인 | #47 cold-pull/source 관측; 별도 독립 Reviewer가 권한/변경/증적 검토 |
+
+구현 후보를 정리했지만 독립 검증을 작성자 자기 승인으로 대체하지 않는다. 도메인별 exact 파일/권한/수명·복구시간·담당 수용과 SEC 결정 전 실제 adapter apply는 금지한다.
 
 ## 5. 비용과 일정: 담당자가 사용할 계산 기준
 교육장 한도 준수 + 매일 사용금액 리포트가 사용자 최신 합의다. 별도 교육장 유료구축 승인이나 팀 Billing/CE/Budget 관리자 권한을 선행조건으로 만들지 않는다.
@@ -134,7 +161,7 @@ EBS GB-month 단가는 공급자 prorating 기준으로 hour 환산하고 사용
 |---|---|---|
 | 이권욱 #34/#40/#42 | 이 단일안의 R/I/T/P 동등성·관리 DNS/route subset·Harbor logical D22 입력·비용 계약 정렬 | 지원/용량/보안 차이를 Decision에 명시, 독립 리뷰, exact inputs 반영; 스스로 independent approval 금지 |
 | 이하영 #35/#38 | 계정 HCP stable version/type·AZ offering·named quota/support/subscription/link/STS-OIDC, ELB role, sizing·source reconciliation·registry CA 지원 확인; network/IAM IaC 준비 | read-only 원본+capacity/cost 표; ELB role 미존재/activation UNVERIFIED 해소는 별도 reviewed bootstrap; exact input/plan 검토 |
-| 이재환 #37/#43/#47 | P1 live 요청량·replica/probe/port/PVC read-only 수집, portable base/UID; #37 peer ID·Libreswan·양 gateway forwarding·db01 return route와 인수순서1~10; source/DB·VPN복구 | LAB 실제 Running/Ready/업무 증적, source-set 갱신/negative test 구현; ROSA에서는 새로 runtime 인수 |
+| 이재환 #37/#43/#47 | P1 live 요청량·replica/probe/port/PVC read-only 수집, portable base/UID; #37 peer ID·Libreswan·양 gateway forwarding·db01 return route와 인수순서1~10; source/DB·VPN복구 | LAB 실제 Running/Ready/업무 증적; #37 forwarding adapter·#47 DB adapter 세부 분담은 위 제안표 참조(Lead 수용 PENDING). #47 소비 측 source readback·negative/정합 시험과 공통 도구 구현(#38 후보)을 구분; ROSA에서는 새로 runtime 인수 |
 | 사용자 이권욱 | 현 read-only 역할로 지원 version/type/계정 상태 수집 지원; 교육장 안내 한도·기간·일일 리포트 근거 연결; D21 final raw 제공 | 토큰/PSK/key 원문 없는 원본 관측과 final raw hash/size 검증. 같은 개인 MFA 조회를 다시 수행할 필요 없음 |
 | 산출물별 독립 Reviewer | 변경된 최신 HEAD의 설계/코드/증적 범위 리뷰 | 실제 승인 기록. Terraform#3 승인과 evidence#104 승인은 해당 exact HEAD/기존 scope에만 적용 |
 
@@ -170,7 +197,7 @@ D23 전체 P1 기능을 P0로 변경하지 않는다. Private 접속의 mandator
 - Harbor TLS/firewall/audience, arbitrary UID actual execution, managed encryption/recovery/관측 동등성.
 - 교육장 한도·기간과 서울 full total-to-complete/허용 가동시간, subscription/link/STS-OIDC 및 구축 권한.
 - ELB service-linked role account gate: absent 관측 + create denial을 reviewed bootstrap/actual readback으로 해소; EIP4와 이름별 quota 확인.
-- per-worker source reconciliation 구현·권한·SLA, Harbor HCP CA 입력, 양방향 DNS 및 AZ고정 PVC 복구 계약. production SA의 동적 source 지속성·복합장애 인수는 Freeze 후 actual runtime gate.
+- per-worker 반자동 source reconciliation 구현·권한·SLA, 재맞춤 실행 주체·자격증명 범위의 SEC 결정과 세부 분담 수용, Harbor HCP CA 입력, 양방향 DNS 및 AZ고정 PVC 복구 계약. production SA의 동적 source 지속성·복합장애 인수는 Freeze 후 actual runtime gate.
 - D21 final raw/cleanup integrity intake 및 현재 snapshot·authority 정렬(B5/B6).
 이 목록은 runtime IP가 없다는 이유로 Freeze를 순환 차단하는 것이 아니다.
 
@@ -187,13 +214,20 @@ D23 전체 P1 기능을 P0로 변경하지 않는다. Private 접속의 mandator
 | 하영3 PVC | OSdisk vsPVC 분리, AZ affinity/분류/restore/RPO-RTO | 검증계약 보완; live PVC inventory/실제복구 PENDING |
 | 하영4 계정 | ELBrole 생성주체/준비gate·명칭별quota/EIP4 | handoff 보완; successful bootstrap/readback PENDING |
 
+revision4 재환 재리뷰 처리:
+- 새1: 반자동 우선 후보·실행 위치/도메인별 권한·만료/회수·drift/부분실패/rollback·SLA 측정안을 추가. SEC 결정과 실제 구현/검증은 PENDING.
+- 새2: 공통 도구(#38 후보), forwarding(#37), DB adapter(#47), Harbor adapter(#42) 구현과 소비 측 검증을 분리. 세부 분담 Lead 수용 PENDING이며 기존 담당 변경 없음.
+- 새3: 8.1 과거 조회 HEAD를 역사값으로 표시하고 이번 조회 HEAD/범위를 명시.
+- 기존6건: 재환 재리뷰가 문서 반영 위치를 확인한 범위만 인정; COMMENTED/사람 확인 PENDING이며 승인 아님.
+
 추가 하영CLI/콘솔의견: 단일실행자/고정AWS조회/raw+hash/ROSA별도관측/민감정보분리 절차와 실제copy가능한 collector 준비. 절차·코드작성 STATIC/MOCK만 완료, AWS actual수집·독립코드review는 PENDING.
 
 기존 reviewer COMMENTED/의견은 APPROVED가 아니며, 이 revision의 독립 재리뷰가 필요하다. reviewer의 미확인 autorepair/EgressIP/가격 주장도 actual 지원/관측 전 확정하지 않는다.
 
 ## 8.1 최신 확인과 상태
-조회 HEAD: architecture#8 ca0779ae4f4f9b3dc40c2cceef8badec242e3a71; infra-rosa#2 f5f0db1c50e83b7c9bb5242de9090fdd15cf5720.
-#38/#42/#43/#47 댓글을 재조회했다. 이전 deep review와 unresolved register를 대체 삭제하지 않으며 이 파일의 신규 후보 sizing/NAT/subnet/source 갱신 규칙을 추가 리뷰 대상으로 둔다.
+revision4 수정 전 조회(2026-10-04 13:42 KST): architecture#8 658f0d14d74034ee621a2a509aae6b9e0d4f07a8; infra-rosa#2 f5f0db1c50e83b7c9bb5242de9090fdd15cf5720. 이 파일 자신을 담는 새 commit은 생성 후 PR 처리 코멘트에 기록한다.
+원본 후보 작성 시점 조회값: architecture#8 ca0779ae4f4f9b3dc40c2cceef8badec242e3a71(역사값이며 최신 HEAD 아님).
+이번에는 PR8 전체 댓글/리뷰, #35/#38/#43/#47 댓글과 #38 본문을 재조회했다. #43 checkpoint 확정과 새 actual 계정/capacity/source 결과는 조회한 기록에 추가되지 않았다. #42는 이번 재조회 범위 밖이며 기존 연결 근거로 유지한다. 이전 deep review와 unresolved register를 대체 삭제하지 않으며 이 파일의 신규 후보 sizing/NAT/subnet/source 갱신 규칙을 추가 리뷰 대상으로 둔다.
 STATIC=문서 논리·권위/수치/상태 대조; CI=이 신규 설계 후보에 대한 실행 NOT_RUN; RUNTIME=ROSA/production Child SA/이 구성 NOT_RUN.
 IAM user supplied runtime read scope PASS는 유지. ROSA page의 자동 CreateServiceLinkedRole 시도는 OBSERVED_DENIED이며 성공 구축 아님.
 REVIEW=신규 설계 독립 승인 PENDING; MERGE=NOT_RUN; PUBLICATION=author branch GitHub candidate만, main/정본 release 미발행.
