@@ -1,4 +1,4 @@
-# D22 現場 read-only 입력 수집 및 승인 연결
+# D22 현장 read-only 입력 수집 및 승인 연결
 기준: 2026-10-04 KST. AI: CODEX_ASSISTED.
 상태: RUNBOOK_DRAFT / FIELD_EXECUTION=NOT_RUN / D22_FINAL=PENDING.
 대상: [D22 계약 후보](../reviews/20261004-harbor-d22-input-contract.md). Phase1 타 세션 Runtime 작업을 재실행하지 않는다.
@@ -48,7 +48,7 @@ d22_out="$(mktemp -d "$HOME/d22-harbor-ro-XXXXXXXX")" || exit 2
 # s_client의 session/keying-material 상세 stdout을 raw 파일로 저장하지 않는다.
 timeout 20s openssl s_client -connect 10.1.93.54:443 \
   -servername harbor.fds.internal -verify_hostname harbor.fds.internal \
-  -verify_return_error -CAfile "$D22_CA" -showcerts -no_ticket \
+  -verify_return_error -CAfile "$D22_CA" -no-CApath -no-CAstore -showcerts -no_ticket \
   </dev/null 2>"$d22_out/tls-diagnostics.txt" |
   awk '/-----BEGIN CERTIFICATE-----/{keep=1} keep{print} /-----END CERTIFICATE-----/{keep=0}' \
   > "$d22_out/server-chain.pem"
@@ -73,7 +73,7 @@ printf 'READONLY_CAPTURE=%s\nSTATE=CAPTURED_REVIEW_REQUIRED\n' "$d22_out"
 ```
 
 정상 수집: TLS_RC0/FILTER_RC0, leaf 파싱·현재 유효성 성공, SAN에 harbor.fds.internal, 예상 Root로 이름/chain 검증 성공. 이는 **고정 CA를 명시한 endpoint TLS** 범위이며 OS 기본 trust/Podman/runtime 로그인·cold-pull PASS가 아니다.
-미응답/timeout/검증실패는 RC·진단을 보존하고 PENDING/FAIL 원인을 분류한다. insecure/HTTP·hostname bypass로 재시도하지 않는다. 파일은 현장 개인 디렉터리에 보존하고 리뷰 후 공개 인증서/필요한 diagnostics만 인계한다. 오류로 checksum 생성 전 중단되면 해당 디렉터리를 같은 방식으로 로컬 해시해 실패 증적을 보존한다.
+미응답/timeout/검증실패는 RC·진단을 보존하고 PENDING/FAIL 원인을 분류한다. insecure/HTTP·hostname bypass로 재시도하지 않는다. TLS1.3 stdin EOF/close 처리 실패도 있을 수 있으므로 nonzero RC만으로 인증서 불신을 확정하지 않는다. 공개 leaf/diagnostics가 있으면 검증오류·종료오류를 분리해 담당자가 검토하고 성공으로 덮어쓰지 않는다. 파일은 현장 개인 디렉터리에 보존하고 리뷰 후 공개 인증서/필요한 diagnostics만 인계한다. 오류로 checksum 생성 전 중단되면 해당 디렉터리를 같은 방식으로 로컬 해시해 실패 증적을 보존한다.
 
 ## 4. Runner OS trust 및 IP/FQDN 계약
 별도 OS trust 읽기 전용 검증은 같은 OpenSSL client에서 CAfile 인자 없이 수행하되, 이 프로세스가 환경 CA 설정을 사용했는지와 OS default paths를 확인해 기록한다. 임의 SSL_CERT_FILE/SSL_CERT_DIR을 설정하거나 전체 env를 덤프하지 않는다. 결과를 단순 OS 전체 PASS로 확대하지 않는다.
