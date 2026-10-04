@@ -40,7 +40,7 @@ On-Prem의 CPU/RAM/스토리지 현재 inventory와 승인 application requests/
 | Machine/Pod/Service CIDR | machine CIDR=10.20.0.0/16 후보; Pod/Service CIDR/host prefix는 선택한 HCP version/workflow의 read-only 지원 기본값을 수집해 명시 pin | machine CIDR/VPC 정합과 모든 On-Prem/Runner/기존 VPC overlap 검사. 지원 기본값 미조회이므로 숫자 발명 금지; 정확 값은 pre-create 입력 |
 | Relay | 기존 t3.medium, 10.20.110.10, AMI 위 값, gp3 40 GiB encrypted, EIP1 | 확정값 유지; public SSH 금지, management SSM 우선; source-dest-check=false, auto IPv4 off. peer는 explicit IKE ID로 인증; dynamic public source용 outer UDP500/4500 ingress 0.0.0.0/0은 D21 위험수용 계약 참조 |
 | DB source 모델 | 최소 per-worker source-set + 승인 규칙에 따른 반자동 reconciliation을 우선 설계검토 | 매 IP 정책 재승인 대신 사전 승인 규칙과 사람이 시작하는 검증·적용. 상시 다중 도메인 쓰기 자격증명은 두지 않는 후보. 실행 주체·단기/회수 가능한 최소 권한은 SEC 결정; 구현/독립 리뷰·SLA 수용 전 HOLD |
-| Registry | 기존 Harbor primary 재사용 권장, approved immutable digest와 TLS/pull-only robot | D22 미확정. HCP registry-config-additional-trusted-ca에 hostname→공개 CA PEM JSON, pull-only robot secret은 승인 앱 namespace/SA 범위. TLS/firewall/audience 잔여 해소 및 실제 cold-pull 전 READY 아님; insecure 우회 금지 |
+| Registry | 기존 Harbor primary 재사용 권장, approved immutable digest와 TLS/pull-only robot | D22 미확정. HCP registry-config-additional-trusted-ca에 hostname→공개 CA PEM JSON, pull-only robot secret은 승인 앱 namespace/SA 범위. TLS/firewall/Harbor Robot 인증 잔여 해소 및 실제 cold-pull 전 READY 아님; insecure 우회 금지 |
 | Workload | 하나의 Kubernetes base + OpenShift overlay; 동일 API/engine business contract | image digest, probes/ports, requests/limits를 실제 source와 연결 |
 | State | network / vpn / rosa-prereq / rosa-runtime; S3 native use_lockfile=true | exact bucket/key/권한/보존을 plan 전 고정; Secret 원문 저장·출력 금지 |
 
@@ -170,6 +170,8 @@ EBS GB-month 단가는 공급자 prorating 기준으로 hour 환산하고 사용
 
 P1 live 입력 handoff: #43 본 작업(10-16~19)보다 먼저 #34 최초 Freeze 심사 전에 requests/limits·replica·probe·port·PVC/source revision을 수집한다. 제안 checkpoint는 10-12 18:00 KST이며 Lead 일정 확정은 PENDING; 기존 #43 start/end/AC를 앞당겨 변경한 것이 아니다. 이재환의 즉시 read-only 준비 의사를 소비한다. API access/RBAC 부족이면 원본 error/RC와 수집 가능 항목을 남기고 capacity HOLD. missing request/limit를 0으로 처리하지 않고 LimitRange/defaulted actual spec과 관측 peak를 구분한다.
 
+D22 입력표: [Harbor D22 입력 계약 후보](20261004-harbor-d22-input-contract.md). Git DNS/CSR와 P1 보고·정책을 연결하고 공개 CA/current leaf·Robot metadata·approved digest·실제 cold-pull을 별도 gate로 정리했다. D22 논리 판단은 #42 Lead, Code/mixed 및 evidence 독립 리뷰는 기존 governance를 따른다. 배포 TokenRequest audience와 Harbor Robot scope는 별도다.
+
 D22는 logical registry/trust/credential/digest/fallback 계약을 Freeze 전 준비하고 실제 cluster endpoint/cold-pull 결과는 Basic Ready 이후 완성한다. 현재 10-15 Final 일정·AC를 임의 수정하지 않고 단계별 authority 차이를 기록한다.
 D23 전체 P1 기능을 P0로 변경하지 않는다. Private 접속의 mandatory DNS subset만 pre-create 계약에 포함한다.
 
@@ -197,7 +199,7 @@ D23 전체 P1 기능을 P0로 변경하지 않는다. Private 접속의 mandator
 잔여 차단:
 - supported exact version/type/AZ/pool 조건, 승인 requests/limits와 N-1 capacity, CIDR/egress 필수목록·집행 계약.
 - Private management route/selector/return + DNS + external PrivateLink SG 지원 계약.
-- Harbor TLS/firewall/audience, arbitrary UID actual execution, managed encryption/recovery/관측 동등성.
+- Harbor TLS/firewall/Robot 인증(배포 TokenRequest audience와 별도), arbitrary UID actual execution, managed encryption/recovery/관측 동등성.
 - 교육장 한도·기간과 서울 full total-to-complete/허용 가동시간, subscription/link/STS-OIDC 및 구축 권한.
 - ELB service-linked role account gate: absent 관측 + create denial을 reviewed bootstrap/actual readback으로 해소; EIP4와 이름별 quota 확인.
 - per-worker 반자동 source reconciliation 구현·권한·SLA, 재맞춤 실행 주체·자격증명 범위의 SEC 결정과 세부 분담 수용, Harbor HCP CA 입력, 양방향 DNS 및 AZ고정 PVC 복구 계약. production SA의 동적 source 지속성·복합장애 인수는 Freeze 후 actual runtime gate.
