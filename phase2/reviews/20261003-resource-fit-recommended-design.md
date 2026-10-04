@@ -75,6 +75,7 @@ P1/P2 동일 DB 시험은 test ID/account/mutation window/migration owner/expect
 - SELinux Enforcing/firewall/TLS 유지. SA down/plaintext/new-source/engine/미허용 port 부정시험과 Pod 재배치/worker replacement/VPN복구 후 정합 시험 필수.
 
 ### source 재맞춤 실행·권한 결정안 — revision 4 신규 제안
+세부 검토안: [source 재맞춤 SEC 결정 후보 v1.0](20261004-source-reconciliation-sec-decision-candidate.md). 실행자·대체자·domain별 최소 권한/회수·부분실패/rollback·30분 복구목표 후보를 정리했다. 전부 신규 제안이며 SEC/Lead 수용·실측 전 확정값이 아니다.
 재환 [2026-10-04 재리뷰](https://github.com/321Team/fds-project-architecture/pull/8#pullrequestreview-5403923382)의 새 지적 1·2에 대한 후보다. **실행 주체·자격증명 범위 = SEC 결정 PENDING**이며, 기존 역할/AC/담당을 변경하거나 새 쓰기 권한을 부여한 기록이 아니다.
 
 | 방식 | 판단 | 채택 조건 |
@@ -102,7 +103,7 @@ P1/P2 동일 DB 시험은 test ID/account/mutation window/migration owner/expect
 구현 후보를 정리했지만 독립 검증을 작성자 자기 승인으로 대체하지 않는다. 도메인별 exact 파일/권한/수명·복구시간·담당 수용과 SEC 결정 전 실제 adapter apply는 금지한다.
 
 ## 5. 비용과 일정: 담당자가 사용할 계산 기준
-교육장 한도 준수 + 매일 사용금액 리포트가 사용자 최신 합의다. 별도 교육장 유료구축 승인이나 팀 Billing/CE/Budget 관리자 권한을 선행조건으로 만들지 않는다.
+교육장 한도 준수 + 매일 사용금액 리포트가 사용자 최신 합의다. 2026-10-04 사용자 후속 합의: 10월 6일(화)부터 비용 정보를 텍스트로 전달한다. 수신 전 금액/한도/통화/기간을 추정하지 않으며 비용과 독립적인 설계/검증 준비를 진행한다. 별도 교육장 유료구축 승인이나 팀 Billing/CE/Budget 관리자 권한을 선행조건으로 만들지 않는다.
 기존 문서의 $400/$450/$500는 역사/내부 정책 입력이며 교육장 한도와의 일치는 미확인이다. 정확한 교육장 한도·기간·리포트 data source를 기존 기록과 대조해 현행 cost authority를 정렬한다. 미조회 금액은 0이 아니다.
 12 worker vCPU의 ROSA service fee는 3×$0.171 + HCP $0.25 = **$0.763/시간 (ROSA service fee만, 총액 아님)**. 24시간 $18.312; 192시간 예시 $146.496. 이는 service fee만이다.
 192시간은 단가 비교 시나리오이며 실제 사용시간 승인이나 기존 10-15 Basic Ready/10-19 Full/10-22 후속 일정을 대체하지 않는다.
