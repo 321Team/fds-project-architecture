@@ -1,0 +1,76 @@
+# Harbor D22 입력 계약 후보
+기준일: 2026-10-04 KST. AI: CODEX_ASSISTED.
+상태: LOGICAL_CONTRACT=PROPOSED / D22_FINAL=PENDING / ROSA_RUNTIME=NOT_RUN / ARCHITECTURE_FREEZE=HOLD.
+수정 전 architecture PR8 HEAD: e4131e4c6ccf0f7a735025c7c1dce5da8306eb1d.
+#42 기존 일정·AC·담당을 변경하지 않는다. Final(10-15)은 #38 Basic Ready 이후 실제 route/TLS/credential/pull 증적으로 완성한다. 생성 전 logical 계약과 생성 후 actual 인수를 구분한다.
+
+## 1. 현재 확보한 원본과 한계
+| 입력 | 확인 근거 | 인정 범위 |
+|---|---|---|
+| Harbor 이름/주소 | infra-dns 5f7505f9613e4b94aedd4bcdaba52f2b3f1a5f19, zones/fds.internal.zone: harbor=10.1.93.54, db=10.1.93.55 | Git 원본. live DNS 응답/route 성공 아님 |
+| CSR 이름 | infra-pki f8bded5c02b4497452da0a3117fc7e08aab8f9bb, pki/harbor-csr.cnf: CN harbor.fds.internal; SAN harbor.fds.internal/harbor01/10.1.93.54 | CSR 요청값. 현재 서버 leaf SAN/issuer/expiry/fingerprint 증명 아님 |
+| Harbor 버전/기존 pull 계정 | baseline #14 comment5927832146: Harbor2.13.1, fds 프로젝트 robot$worker pull-only, Worker 범위 보고 | Phase1 보고. ROSA 권한 재사용·CP 허용·current metadata 확정 아님 |
+| Robot 정책 | baseline #13 comment5659049448: finite30days, Never 미채택; scan 및 CRITICAL/HIGH 차단 | 기존 정책을 소비. 실제 계정 expiry/readback 필요 |
+| Phase1 allowlist source | infra-ansible PR63 badbe29440916ec3ec79da8fc81722c2e6c4e75b, OPEN | 소스 존재. merge/apply/실제443 허용 아님 |
+| 현재 장애 | baseline #16 comment5964396337: Runner TLS BLOCK, allowlist runtime 미완료, 배포/복구 미실행 | Phase1 장애를 P2 READY로 확대하지 않음 |
+| 공개 CA/fingerprint | infra-pki fingerprints 경로에서 실제 값 확보 못함 | 값·secret reference 모두 PENDING; 임의 인증서/해시 기입 금지 |
+
+#16의 Kubernetes TokenRequest audience 미고정은 deploy 인증 문제다. Harbor Robot scope와 동일한 인증항목으로 합치지 않는다. #13 AC03의 static/mock 성공도 P2 registry runtime 성공을 의미하지 않는다.
+
+## 2. D22 필수 12개 입력
+| # | 계약 후보/채울 값 | 현재 상태·담당 입력 |
+|---:|---|---|
+| 1 | 기존 On-Prem Harbor primary 조건부 재사용 | 권욱 #42 Lead 결정 PENDING |
+| 2 | harbor.fds.internal:443 / fds / 앱별 repository; exact repo 목록은 portable base 및 approved image 연결 | 이름·프로젝트는 P1 근거 있음; P2 repository 목록 재환/권욱 PENDING |
+| 3 | Runner push와 ROSA worker pull principal 분리. P2 전용 project pull-only Robot 제안; 기존 robot$worker 공유 자동승인 금지. Push principal은 필요한 project push+pull만 | 하영/권욱 metadata·scope·expiry·rotation 책임 입력 PENDING |
+| 4 | 검토된 공개 issuing/root CA bundle, hostname→PEM JSON을 HCP additional trusted CA 입력으로 고정; leaf 이름/chain/만료 검증 | 하영 ROSA 지원 입력 + 권욱 PKI 공개 CA/fingerprint PENDING |
+| 5 | approved scan/provenance와 동일 image@sha256 digest 배포. mutable tag만으로 승인/rollback 금지; index와 architecture별 manifest 구분 | 재환 APP exact digest/scan/lineage PENDING |
+| 6 | Runner10.250.10.20→Harbor10.1.93.54 TCP443, host/Podman 각 trust 및 push 인증 확인 | P1 현재 TLS BLOCK; route/allowlist/current readback 하영 PENDING |
+| 7 | 각 승인 ROSA worker actual node-pull source→Harbor443, VPN/FORWARD/return 및 HCP node trust | #38 inventory, #37 transport, #42 Harbor 소비; 생성 전 tuple 규칙/생성 후 IP 증적 |
+| 8 | 신규 pull 실패 시 새 rollout STOP. 이미 실행 중 정상 workload/이전 approved digest 보존. cloud mirror는 별도 승인·동일 digest·접속/인증 증적이 있을 때만 후보 | 자동 failover/새 cloud registry 생성 승인 없음 |
+| 9 | 이미지 크기×노드/캐시 미스/교체 횟수, hybrid transfer 및 선택 mirror storage/egress; 고정/변동 비용 분리 | 금액 입력은 사용자 10-06부터 텍스트 제공; 한도/잔여/기간 미확인 HOLD |
+| 10 | 비밀은 승인 secret store/reference만 기록. namespace/SA imagePullSecret 범위, 만료·회수·rotation 및 담당. 전역 pull-secret 변경은 필요성 별도 판단 | reference·namespace·SA·principal metadata PENDING; token/private key 원문 Git 금지 |
+| 11 | source SHA + raw 관측 KST/환경/RC + sanitized 결과 + raw hash/size + 시험ID + 독립 evidence review 연결 | 아래 인수표로 확보; 현재 actual 없음 |
+| 12 | logical 선택/전제 수용 → Basic Ready 이후 Final GO/NO_GO 기록. 이후 실제 cold-pull/실패·복구 인수 상태 별도 | #42 Lead 판정 PENDING; 최종 성공·승인 미기록 |
+
+P2 전용 Robot은 신규 제안이며 기존 P1 계정을 폐기하거나 즉시 발급하라는 지시가 아니다. finite30days 정책을 유지하되 실제 expiry와 시험/운영기간의 충돌은 만료 전 rotation·검증·회수 일정으로 해결한다. Robot에는 관리권한을 부여하지 않는다. Robot token의 최초 전달/갱신은 비밀 채널로 수행하고 이 문서에는 principal metadata와 reference만 남긴다.
+
+## 3. 경로와 trust의 분리
+- Harbor host 설치/복구/leaf key·CSR 및 Worker 입력은 기존 하영 책임, CA signing/trust·Runner 입력은 기존 권욱 책임을 소비한다. #42 source adapter 제안은 Harbor host 기존 운영 담당을 바꾸지 않는다.
+- source reconciliation 후보와 연결하되 DB5432와 Harbor443 actor/port tuple은 별도다. node의 kubelet/runtime pull은 Pod 내부 egress 시험/NetworkPolicy PASS만으로 입증할 수 없다.
+- fds.internal outbound DNS→10.1.93.52/53 계약은 [양방향 DNS 후보](20261004-private-management-bidirectional-dns-contract.md)를 소비한다. DNS source 레코드만으로 ROSA live lookup 성공을 선언하지 않는다.
+- leaf SAN/chain/current expiry 및 신뢰할 CA fingerprint를 실제 관측해 source와 대조한다. self-signed 우회, insecure registry, TLS 검증 생략 금지.
+- ROSA HCP 공식 additional trusted CA 입력은 hostname을 key, 공개 PEM을 value로 하는 JSON이다. 지원 exact version/CLI 입력을 하영이 고정한다. 생성 전에 준비하며, 생성 후 registry 설정 변경은 전체 machine pool node rollout을 유발할 수 있어 PDB/용량/source 갱신/허용창을 포함한 별도 변경으로 취급한다.
+- registry allowed/blocked 설정을 추가할 경우 공식 플랫폼 payload registry를 보존하고 지원 제약을 확인한다. Harbor만 허용하여 플랫폼 pull을 막는 후보를 승인값으로 만들지 않는다.
+
+## 4. 실제 인수 계획
+| 시험 | 필요한 실제 증적 | 판정 |
+|---|---|---|
+| DNS/route | ROSA worker 이름응답, 실제 node-source, VPN·양 gateway·Harbor return/443 허용 readback | source 미분류/비대칭/잘못된 DNS면 STOP |
+| TLS | Runner host/Podman 및 ROSA node pull에서 이름·chain 검증; 공개 CA/leaf fingerprint·expiry | 각각 성공 필요; curl만 성공은 pull PASS 아님 |
+| 인증 | P2 pull-only 성공, 승인 테스트 repository에서 push 권한 부재; Runner 최소 push scope | 앱 namespace/SA secret 범위와 expiry 확인; 운영 태그 변경 금지 |
+| Cold pull | 승인 namespace에서 approved digest 신규 시험 Pod, imagePullPolicy Always + 실제 registry request/필요 layer 다운로드 또는 해당 digest 없는 승인 신규 worker 관측 | Always/Event만으로 캐시 미스 증명 금지. 공용 node image 삭제/drain 금지 |
+| 업무 | 같은 digest의 arbitrary UID 실제 Running/Ready, API→engine→DB 기대 결과 | admission/HTTP200만으로 무결성 PASS 금지 |
+| 부정/복구 | 분리된 시험 namespace/SA의 잘못된 credential 등 승인 실패조건, 신규 rollout STOP, 복구 후 같은 digest pull/업무 재확인 | cluster 전역 credential/운영 secret 변경 금지; 사전 허용창·cleanup |
+| 교체/장애 | worker replacement source reconciliation 후 새 cold-pull; Relay outage/DNS 영향 및 복구 순서 | cached image 생존을 cold-pull/HA 성공으로 인정하지 않음 |
+
+cloud mirror를 선택한다면 digest 보존을 직접 확인한다. registry의 index/manifest 변환이나 재빌드로 digest가 바뀌면 동등 이미지라고 선언하지 말고 새 scan/lineage/승인을 받는다. mirror 구축·replication·비용은 현재 승인/구현된 상태가 아니다.
+
+## 5. 결정·리뷰·실행 권위
+#42 권욱 Lead가 D22 선택 및 Runtime/인수 판정을 기록한다. 논리 문서 판단을 매번 별도 독립 승인해야 한다는 새 규칙을 만들지 않는다.
+infra-pki POLICY의 Code/mixed PR 독립 리뷰와 fds-project-evidence 모든 PR 독립 리뷰는 유지한다. 자신의 코드/증적을 스스로 독립 승인하지 않는다. PR8은 기존 코드가 포함된 mixed 변경이므로 최신 범위의 독립 리뷰가 여전히 PENDING이다.
+#42 logical 입력 수용, 구현 PR 독립 리뷰, Final GO/NO_GO, 실제 시험 및 evidence 리뷰를 서로 다른 상태로 남긴다. 최종 일정/AC를 앞당기거나 P1 4/4 요구를 축소하지 않는다.
+
+즉시 인계할 입력:
+- 권욱: 공개 CA bundle/fingerprint 및 secret reference·P2 Robot 분리/권한/rotation 제안 수용 여부, D22 logical 선택.
+- 하영: live Harbor leaf/Robot metadata·Runner TLS 장애 해소 증적, exact HCP CA 입력 지원, node-pull source/용량·rollout 제약.
+- 재환: approved app repo/digest·scan/lineage·namespace/SA 및 portable base 소비 계약.
+- 금액 수신 후: 통화/한도/기간/누적/집계시각을 비용표에 연결하고 total-to-complete/허용시간 재산정.
+
+STATIC=원본·역할·상태 대조. CI=해당 신규 문서 실행 미수행. RUNTIME/APPLY/MERGE=NOT_RUN. 실제 값 없이 Final/Freeze GO로 승격하지 않는다.
+
+## 6. 근거
+- [D22 #42](https://github.com/321Team/fds-project-baseline/issues/42), [P1 Harbor #13](https://github.com/321Team/fds-project-baseline/issues/13), [finite30days 결정](https://github.com/321Team/fds-project-baseline/issues/13#issuecomment-5659049448).
+- [P1 Harbor 입력](https://github.com/321Team/fds-project-baseline/issues/14#issuecomment-5927832146), [CI/CD runtime 장애](https://github.com/321Team/fds-project-baseline/issues/16#issuecomment-5964396337), [allowlist PR63](https://github.com/321Team/infra-ansible/pull/63).
+- [DNS pinned source](https://github.com/321Team/infra-dns/blob/5f7505f9613e4b94aedd4bcdaba52f2b3f1a5f19/zones/fds.internal.zone), [CSR pinned source](https://github.com/321Team/infra-pki/blob/f8bded5c02b4497452da0a3117fc7e08aab8f9bb/pki/harbor-csr.cnf), [PKI governance](https://github.com/321Team/infra-pki/blob/f8bded5c02b4497452da0a3117fc7e08aab8f9bb/docs/POLICY.md).
+- [Red Hat HCP registry CA/rollout](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/images/image-configuration-hcp), [Harbor Robot scope](https://goharbor.io/docs/main/working-with-projects/project-configuration/create-robot-accounts/)（개념 참고; 설치2.13.1의 exact UI/API는 실제 확인）.
