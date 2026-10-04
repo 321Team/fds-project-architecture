@@ -247,6 +247,28 @@ except Exception as e:
 PY
 ```
 
+## 2026-10-04 리뷰 후속 — MFA 기한·백업 보관
+하영 [IAM v2 정적 검토 의견](https://github.com/321Team/fds-project-architecture/pull/8#issuecomment-5968474123)의 권고 2건을 보완한다. bootstrap 코드·policy/trust·권한 범위는 변경하지 않는다. 앞부분 v1/v2 실행 대기는 작성 시점 이력이며, 이후 권욱의 configuration readback·조회 성공은 [#35 최신 조회 기록](https://github.com/321Team/fds-project-baseline/issues/35#issuecomment-5967360872)의 보고 범위로 구분한다. 이 문서 보완 때문에 이미 적용한 bootstrap을 다시 실행하지 않는다. 다른 두 사용자의 현재 MFA/assume 성공 증적은 이번 PR/이슈 조회에서 추가 확인하지 못했다.
+
+### MFA 등록·검증 권장 기한
+- 신규 적용 시 각 본인은 적용 직후 같은 작업 세션에서 MFA 등록→로그아웃→MFA 재로그인→지정 역할 전환을 완료하는 절차를 권장한다. 이미 적용된 사용자라면 다음 본인 사용 세션 시작 시 완료하며, 검증 전 해당 사용자의 readiness는 PENDING으로 유지한다.
+- 이는 추가 calendar 마감일/팀 정책의 확정이 아니다. #35 Lead가 당사자의 수행 가능 시점과 미등록 계정 대응을 확정해 기록한다. 등록 실패나 담당 부재는 비밀번호만으로 사용 가능한 기간을 방치하지 않고 Lead에 연결한다. 세션/계정 차단 같은 추가 IAM 변경은 별도 검토 없이 실행하지 않는다.
+- MFA device count, MFA 로그인, role assumption을 각각 기록한다. OTP/QR/seed·임시 credential은 증적에 넣지 않는다. 권욱의 기존 성공을 다른 두 사람 성공으로 확대하지 않는다.
+
+### 백업 별도 보관·재검증
+- 신규 실행에서는 IAM 쓰기 직전에 생성된 실제 BACKUP 파일을 0600으로 유지하고, CloudShell Actions→Download file로 승인된 접근 제한 보관 위치에 별도 복사해 원본과 byte size/SHA256를 대조한다. 별도 복사/대조 실패 시 IAM 변경을 시작하지 않는 절차를 권장한다. 현재 코드가 이 외부 보관 완료를 강제하지는 않는다.
+- 이미 적용된 이번 변경은 해당 실제 백업을 즉시 별도 보관하고 검증하는 후속으로 처리한다. 다운로드 실패한 이전 파일이나 현재 정책 출력으로 pre-change 백업을 임의 대체하지 않는다. 백업 미확보는 RECOVERY_BACKUP=PENDING으로 기록한다.
+- 적용/실패 종료 직후 원본 backup, 실행 stdout/stderr, 정책별 readback/rollback 결과의 보관 여부를 확인한다. 백업은 정책 JSON이며 credential을 수집하지 않는다. 계정/Principal 정보가 포함될 수 있어 raw 공개 commit 금지; 승인 보관자/보관 위치/보존·삭제 기준은 #35에서 연결한다.
+- Linux/CloudShell에서 실제 파일을 지정해 크기와 해시를 읽는다(예시 파일명 그대로 실행하지 않음):
+```bash
+backup_path='ACTUAL_BACKUP_FILE.json'
+test -f "$backup_path" || { printf '%s\\n' 'STOP: backup missing'; exit 1; }
+stat -c '%a %s %n' -- "$backup_path"
+sha256sum -- "$backup_path"
+```
+수신 측도 같은 bytes를 재해시하며 KST 수령 시각·size/hash·접근 범위만 추적 기록에 남긴다. 해시 일치는 백업 무결성일 뿐 IAM 권한/복구 성공이 아니다. 수동 복구는 정확히 해당 백업을 확인하고 현재 drift를 검토한 후 기존 복구 절차로 수행한다.
+- v2 bootstrap은 외부 다운로드 대기를 코드로 보장하지 않으므로, 이후 재적용이 필요하면 backup 후 별도 보관 checkpoint를 코드에 연결하는 변경·리뷰가 선행돼야 한다. 이번 후속은 문서 절차만 보완했으며 AWS/복구 실제 실행은 하지 않았다.
+
 ## 정상 판정 및 후속
 1. STATUS=IAM_CONFIG_READBACK_PASS: configuration equality 확인까지만 PASS. MFA sign-in/role assumption 아직 NOT_TESTED.
 2. 각 사용자 본인 IAM console 로그인, My security credentials에서 MFA 확인/등록. MFA 등록 후 로그아웃하여 MFA로 재로그인.
