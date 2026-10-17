@@ -92,6 +92,11 @@
       if (html.indexOf(pairs[i][0]) === -1) throw new Error("status marker missing: " + pairs[i][0]);
       html = html.split(pairs[i][0]).join(pairs[i][1]);
     }
+    var noteAnchor = '<script id="archify-guided-views-data"';
+    if (html.indexOf(noteAnchor) === -1) throw new Error("revision note anchor missing");
+    if (html.indexOf("</head>") === -1) throw new Error("stylesheet head marker missing");
+    html = html.replace("</head>", '<link rel="stylesheet" href="context.css"></head>');
+    html = html.replace(noteAnchor, "<p class=\"revision-note\">과거 기록: v3.1.19 당시 설계와 진행 상태입니다. 현재의 클라우드 연계 방향·검증 범위는 <a href=\"overview.html\">서비스 흐름과 설계 범위</a>를 확인하세요.</p>" + noteAnchor);
     return html;
   }
 
@@ -101,8 +106,9 @@
       return res.text();
     })
     .then(function (html) {
+      var patched = patch(html);
       document.open();
-      document.write(patch(html));
+      document.write(patched);
       document.close();
     })
     .catch(function (err) {
