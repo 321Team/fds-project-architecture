@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="archify 2.17.0-dev.1">
-  <title>FDS Phase 2 물리 아키텍처 · ROSA HCP 초안 (10-16) Diagram</title>
+  <title>FDS Phase 2 물리 아키텍처 · ROSA HCP 초안 (10-18) Diagram</title>
   <script>
     // Resolve the theme before first paint so light-preference users don't
     // see a dark flash. The toolbar script below re-applies with UI state.
@@ -5081,11 +5081,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
            data-preset-badge-blueprint="BLUEPRINT / REV 01"
            data-preset-badge-editorial="EDITORIAL / FIELD NOTE">
         <div class="pulse-dot"></div>
-        <h1>FDS Phase 2 물리 아키텍처 · ROSA HCP 초안 (10-16)</h1>
+        <h1>FDS Phase 2 물리 아키텍처 · ROSA HCP 초안 (10-18)</h1>
       </div>
     </div>
 
-    <script id="archify-guided-views-data" type="application/json">[]</script>
+    <script id="archify-guided-views-data" type="application/json">[{"id":"ingress","label":"외부 진입 경로","focus":["users","igw","ingress_lb","workers"],"note":"외부 사용자 HTTPS → IGW → Ingress LB(public_transport_a, external) → 워커의 Router Pod(TLS 종료) → transaction-api."},{"id":"db-path","label":"DB 통신 경로 (IF-18)","focus":["workers","relay","vpngw","db01"],"note":"워커(private_a) → R2 10.1.93.0/24 → Relay ENI(OFF 상태) → Relay SG 5432 from private_a → IPsec(UDP 500/4500, 인터넷 경유) → vpn-gw01 → db01 5432. 복귀는 db01의 10.20.0.0/16 via .51(R6)."},{"id":"image-pull","label":"이미지 Pull (D22 A안)","focus":["workers","relay","vpngw","harbor"],"note":"D22 A안: Harbor Primary. 워커 → Relay → IPsec → vpn-gw01 → Harbor 443. Relay SG·nft에 443 규칙이 아직 없어 Runtime 대기(점선). ECR은 수동 전환 시 NAT·IGW 경유."},{"id":"egress","label":"인터넷 Egress","focus":["workers","nat","igw","aws_svc"],"note":"private_a/b/c 0.0.0.0/0 → NAT GW(EIP fds-nat) → IGW → ECR·S3 등 리전 서비스. VPC Endpoint 없음. Relay EIP는 egress 우회 경로가 아님."},{"id":"control-plane","label":"컨트롤플레인 연결","focus":["workers","vpce","rh_cp","runner"],"note":"워커 → PrivateLink VPCE → Red Hat 관리 계정의 ROSA HCP 컨트롤플레인(4.22.17 고정). Runner → API 경로(인터넷/VPN)는 미결."}]</script>
 
     <script id="archify-i18n-data" type="application/json">{"locale":"en","messages":{"viewer.kind.frontend":"Frontend","viewer.kind.backend":"Backend","viewer.kind.database":"Database","viewer.kind.cloud":"Cloud","viewer.kind.security":"Security","viewer.kind.messagebus":"Message bus","viewer.kind.external":"External","viewer.kind.neutral":"Neutral","viewer.kind.node":"Node","viewer.kind.start":"Start","viewer.kind.active":"Active","viewer.kind.waiting":"Waiting","viewer.kind.decision":"Decision","viewer.kind.success":"Success","viewer.kind.failure":"Failure","viewer.toolbar.actions":"Diagram actions","viewer.theme.toggle.title":"Toggle theme (T)","viewer.theme.toggle":"Toggle color theme","viewer.theme.dark":"Dark","viewer.theme.light":"Light","viewer.preset.choose.title":"Choose visual style (S cycles)","viewer.preset.choose":"Choose visual style","viewer.preset.style":"Style","viewer.preset.menu":"Visual style","viewer.preset.identity":"Visual identity","viewer.preset.cycles":"S cycles","viewer.preset.classic":"Classic","viewer.preset.classic.short":"Classic","viewer.preset.classic.hint":"Stable technical default","viewer.preset.flow":"Signal Flow","viewer.preset.flow.short":"Flow","viewer.preset.flow.hint":"Motion-forward presentation","viewer.preset.blueprint":"Blueprint","viewer.preset.blueprint.hint":"Engineering review","viewer.preset.editorial":"Editorial","viewer.preset.editorial.hint":"Publication and launch notes","viewer.preset.badge.signalFlow":"SIGNAL FLOW","viewer.preset.badge.blueprint":"BLUEPRINT / REV 01","viewer.preset.badge.editorial":"EDITORIAL / FIELD NOTE","viewer.preset.badge.editorialPlate":"ARCHIFY / PLATE 04","viewer.preset.current":"Visual style: {style}. Choose visual style","viewer.motion.live":"Live","viewer.motion.still":"Still","viewer.motion.pause":"Pause motion","viewer.motion.resume":"Resume motion","viewer.motion.reduced":"Motion paused by reduced-motion preference","viewer.motion.hidden":"Motion paused while this page is hidden","viewer.motion.yielding":"Pause motion; currently yielding to {owner}","viewer.motion.yielding.title":"Live preview enabled · yielding to {owner}","viewer.owner.story":"the guided story","viewer.owner.chapter":"the active chapter","viewer.owner.chapterPreview":"the chapter delta preview","viewer.owner.handoff":"the chapter handoff","viewer.owner.route":"Route Probe","viewer.owner.lens":"Semantic Lens","viewer.owner.relationship":"Relationship Preview","viewer.owner.intent":"Intent Trace","viewer.owner.focus":"semantic focus","viewer.owner.legend":"legend preview","viewer.owner.reader":"reader interaction","viewer.present.enter":"Enter presentation stage","viewer.present.enter.title":"Presentation stage (F)","viewer.present.exit":"Exit presentation stage","viewer.present.exit.title":"Exit presentation stage (F or Escape)","viewer.present.present":"Present","viewer.present.exit.label":"Exit","viewer.export.button":"Export","viewer.export.button.title":"Export diagram (E)","viewer.export.diagram":"Export diagram","viewer.export.menu":"Export","viewer.export.subtitle":"Portable, clean outputs","viewer.export.share":"Share","viewer.export.shareCard":"Share Card","viewer.export.routeShareCard":"Route Share Card","viewer.export.reachShareCard":"Reach Share Card","viewer.export.copyShareCard":"Copy Share Card","viewer.export.copyDiagram":"Copy diagram","viewer.export.clipboardPng":"PNG to clipboard","viewer.export.raster":"Raster images","viewer.export.image":"Image","viewer.export.lossless":"Lossless image","viewer.export.compact":"Compact image","viewer.export.modern":"Modern image","viewer.export.vectorMotion":"Vector and motion","viewer.export.vectorMotion.heading":"Vector \u0026 motion","viewer.export.editable":"Editable vector","viewer.export.motion6s":"6s motion","viewer.export.unsupported":"Not supported by this browser","viewer.export.clipboardUnsupported":"Clipboard image write not supported by this browser","viewer.export.clipboardUnsupported.period":"Clipboard image write not supported by this browser.","viewer.export.clipboardUnsupported.short":"Clipboard image write not supported in this browser.","viewer.export.motionUnavailable":"Motion capture unavailable in this browser","viewer.export.webmUnavailable":"WebM unavailable in this browser","viewer.export.failed":"Export failed: {message}","viewer.export.unknownVariant":"Unknown Share Card variant: {variant}","viewer.export.routeRequired":"Trace a route before exporting a Route Share Card","viewer.export.reachRequired":"Trace authored reach before exporting a Reach Share Card","viewer.export.unknown":"unknown","viewer.export.routeFailed":"Route Share Card export failed: {message}","viewer.export.reachFailed":"Reach Share Card export failed: {message}","viewer.export.copyFailed":"Copy failed: {message}","viewer.export.copiedPng":"Copied PNG to clipboard","viewer.export.copiedShare":"Copied Share Card","viewer.export.downloadedShare":"Downloaded Share Card","viewer.export.downloadedRoute":"Downloaded Route Share Card","viewer.export.downloadedReach":"Downloaded Reach Share Card","viewer.export.downloadedWebm":"Downloaded WebM","viewer.export.recording":"Recording 6 seconds of motion…","viewer.export.card.routeSummary.one":"Route: {source} → {target} · {count} directed hop","viewer.export.card.routeSummary.other":"Route: {source} → {target} · {count} directed hops","viewer.export.card.reachSummary":"Authored {direction} from {origin} · {nodes} · {links} · max {hops}","viewer.export.card.node.one":"{count} node","viewer.export.card.node.other":"{count} nodes","viewer.export.card.link.one":"{count} link","viewer.export.card.link.other":"{count} links","viewer.export.card.hop.one":"{count} hop","viewer.export.card.hop.other":"{count} hops","viewer.export.card.routeBadge":"ARCHIFY · ROUTE · {hops}","viewer.export.card.reachBadge":"ARCHIFY · {direction} REACH","viewer.export.card.defaultBadge":"ARCHIFY · {preset} · {theme}","viewer.export.direction.upstream":"Upstream","viewer.export.direction.downstream":"Downstream","viewer.export.error.canvasUnavailable":"Canvas unavailable for {label}","viewer.export.error.contextUnavailable":"2D canvas context unavailable for {label}","viewer.export.error.toBlobUnavailable":"canvas.toBlob unavailable for {label}","viewer.export.error.toBlobNull":"canvas.toBlob returned no data for {label}","viewer.export.error.variantsCombined":"Share Card variants cannot be combined","viewer.export.error.viewerState":"Share Card export could not remove temporary viewer state","viewer.export.error.routeState":"Route Card export could not preserve the resolved route safely","viewer.export.error.reachState":"Reach Card export could not preserve authored reach safely","viewer.export.error.webmRequirements":"WebM motion export requires a trace animation and browser MediaRecorder support","viewer.export.error.mediaRecorder":"MediaRecorder failed","viewer.export.error.emptyWebm":"MediaRecorder produced an empty WebM","viewer.export.error.webmBackground":"SVG background could not be loaded for WebM export","viewer.guided.region":"Guided diagram views","viewer.guided.previous":"Previous guided view","viewer.guided.previous.title":"Previous guided view ([)","viewer.guided.next":"Next guided view","viewer.guided.next.title":"Next guided view (])","viewer.guided.views":"Guided views","viewer.guided.explore":"Explore this system","viewer.guided.intro":"Step through curated paths without changing the source diagram.","viewer.guided.trail":"Story trail","viewer.guided.beat":"Beat","viewer.guided.nextBeat":"Next","viewer.guided.play":"Play guided story","viewer.guided.play.title":"Play guided story (P)","viewer.guided.pause":"Pause guided story","viewer.guided.pause.title":"Pause guided story (P)","viewer.guided.replay":"Replay guided story","viewer.guided.replay.title":"Replay guided story (P)","viewer.guided.playStory":"Play story","viewer.guided.pauseStory":"Pause","viewer.guided.replayStory":"Replay story","viewer.guided.motionUnavailable":"Story playback unavailable while motion is Still","viewer.guided.enableMotion":"Switch motion to Live to play the guided story","viewer.guided.selectBeatLink":"Select a Story Beat to copy its exact link","viewer.guided.copyMoment":"Copy moment","viewer.guided.momentCopied":"Moment link copied","viewer.guided.momentCopyFailed":"Could not copy story moment link","viewer.guided.copied":"Copied","viewer.guided.copyFailed":"Copy failed","viewer.guided.showAll":"Show all","viewer.guided.showAll.aria":"Show entire diagram","viewer.guided.chapters":"Story chapters","viewer.guided.storyTrail":"Story trail for {label}: {count} beats","viewer.guided.chapter.open":"Open chapter {index} of {total}: {label}, {count} stops","viewer.guided.chapter.current":"Current chapter {index} of {total}: {label}, {count} stops","viewer.guided.chapter.selectedNodes":"{count} selected nodes","viewer.guided.chapter.stops":"{count} stops","viewer.guided.chapter.stop.one":"{count} stop","viewer.guided.chapter.stop.other":"{count} stops","viewer.guided.chapter.current.title":"{label} — current chapter, {count} stops","viewer.guided.chapter.delta.expanded":"{stay} stay, {enter} enter, {leave} leave","viewer.guided.chapter.delta.aria":"Open chapter {index} of {total}: {label}. Chapter focus delta: {delta}","viewer.guided.chapter.delta.title":"{label} — {delta} chapter focus","viewer.guided.handoff":"{from} → {to} · via {label}","viewer.guided.share.chapter":"Chapter {index} / {total}","viewer.guided.share.initial":"Chapter 01 / 01","viewer.guided.share.default":"Guided chapter","viewer.guided.state.ready":"Ready","viewer.guided.state.playing":"Playing","viewer.guided.state.settled":"Settled","viewer.guided.state.paused":"Paused","viewer.guided.state.pinned":"Pinned","viewer.guided.state.still":"Still","viewer.guided.share.step":"Step {index} / {total} · {label}","viewer.guided.share.staticMoment":"{step} · Static moment","viewer.guided.share.complete":"{count} steps complete · {note}","viewer.guided.share.settled":"Path settled for reading.","viewer.guided.share.staticPath":"{count} steps · Static path","viewer.guided.share.ready":"{count} steps · Ready","viewer.guided.share.aria":"{state} chapter {index} of {total}: {label}. {beat}. {route}","viewer.guided.beat.start":"Beat {index} / {total} · {label} · starting point","viewer.guided.beat.forward":"Beat {index} / {total} · {from} → {to}","viewer.guided.beat.reverse":"Beat {index} / {total} · {from} → {to} · reverse authored link","viewer.guided.beat.multiple":"Beat {index} / {total} · {from} ⇄ {to} · {count} authored links","viewer.guided.beat.group":"Beat {index} / {total} · {from} · {to} · grouped · no direct link","viewer.guided.beat.aria.prefix":"Story beat {index} of {total}: {label}. ","viewer.guided.beat.aria.start":"Starting point.","viewer.guided.beat.aria.forward":"From {from} through one authored forward relationship.","viewer.guided.beat.aria.reverse":"From {from}; the authored relationship points from {to} to {from}.","viewer.guided.beat.aria.multiple":"From {from} through {count} authored relationships; shown without arbitrary motion.","viewer.guided.beat.aria.group":"Grouped from {from} with no direct authored relationship.","viewer.guided.caption.start":"Starting point","viewer.guided.caption.grouped":"Grouped transition · no direct authored link","viewer.guided.caption.more":" +{count} more","viewer.guided.caption.reverse":"Reverse authored relationship","viewer.guided.caption.relationships":"{count} authored relationships","viewer.guided.caption.relationship":"Authored relationship","viewer.guided.caption.direction":"authored direction: {from} → {to}","viewer.guided.caption.starting":"Authored starting point","viewer.guided.beatLink":"Copy link to current story moment: Beat {index} of {total}: {label}","viewer.guided.noStory":"This diagram has no authored guided story.","viewer.guide.eyebrow":"Diagram guide","viewer.guide.close":"Close diagram guide","viewer.guide.inspecting":"Inspecting compiled semantics","viewer.guide.actions":"Diagram exploration actions","viewer.guide.find":"Find any node","viewer.guide.find.hint":"Search labels, responsibilities, kinds, and stable IDs.","viewer.guide.route":"Trace a route","viewer.guide.route.aria":"Trace a directed route","viewer.guide.route.hint":"Ask how two semantic nodes connect in authored direction.","viewer.guide.map":"See the whole system","viewer.guide.map.hint":"Open Semantic Radar with a live viewport and stable nodes.","viewer.guide.lens":"Compare semantic kinds","viewer.guide.lens.hint":"Count roles, reveal their traffic, and compare direct authored links.","viewer.guide.story":"Play the guided story","viewer.guide.story.hint":"Walk the authored chapters and real relationships.","viewer.guide.present":"Enter Presentation Stage","viewer.guide.present.hint":"Give the live diagram the viewport without changing export.","viewer.guide.shortcuts":"Additional keyboard shortcuts","viewer.guide.shortcut.export":"Export","viewer.guide.shortcut.theme":"Theme","viewer.guide.shortcut.style":"Style","viewer.guide.shortcut.reset":"Reset","viewer.guide.shortcut.zoomIn":"Zoom in","viewer.guide.shortcut.zoomOut":"Zoom out","viewer.guide.shortcut.close":"Close","viewer.guide.facts":"{nodes} · {relationships} · {views}","viewer.guide.fact.node.one":"{count} semantic node","viewer.guide.fact.node.other":"{count} semantic nodes","viewer.guide.fact.relationship.one":"{count} relationship","viewer.guide.fact.relationship.other":"{count} relationships","viewer.guide.fact.view.one":"{count} guided view","viewer.guide.fact.view.other":"{count} guided views","viewer.guide.story.available.one":"Walk {count} authored chapter and its real relationships.","viewer.guide.story.available.other":"Walk {count} authored chapters and their real relationships.","viewer.guide.story.unavailable":"No authored guided story in this diagram.","viewer.guide.open":"Open diagram guide","viewer.guide.noStory":"This diagram has no authored guided story.","viewer.finder.title":"Find a node","viewer.finder.close":"Close node finder","viewer.finder.placeholder":"Search labels or IDs","viewer.finder.search":"Search diagram nodes","viewer.finder.results":"Diagram nodes","viewer.finder.empty":"No matching nodes","viewer.finder.result.focus":"Focus {label}","viewer.finder.result.routeStart":"Choose {label} as route start","viewer.finder.result.routeTarget":"Choose {label} as route destination, {links}","viewer.finder.status.empty":"No matching nodes","viewer.finder.status.count.one":"{count} matching node","viewer.finder.status.count.other":"{count} matching nodes","viewer.finder.noun.nodes":"nodes","viewer.finder.link.one":"{count} link","viewer.finder.link.other":"{count} links","viewer.finder.result.focus.one":"Focus {label}, {count} related connection","viewer.finder.result.focus.other":"Focus {label}, {count} related connections","viewer.finder.status.filtered":"{visible} of {available} {noun}","viewer.finder.status.all":"{available} {noun}","viewer.passport.eyebrow":"Semantic passport","viewer.passport.metadata":"Node metadata","viewer.passport.evidence":"Verified source evidence","viewer.passport.verified":"Verified source","viewer.passport.verificationScope":"Verified against local Git at the pinned revision. Remote access has not been checked.","viewer.passport.reach":"Authored reach","viewer.passport.reach.trace":"Trace authored reachability","viewer.passport.upstream":"Upstream","viewer.passport.downstream":"Downstream","viewer.passport.upstream.trace":"Trace upstream authored reachability","viewer.passport.downstream.trace":"Trace downstream authored reachability","viewer.passport.close":"Close semantic passport","viewer.passport.copy":"Copy link","viewer.passport.copy.focus":"Copy link to focused node","viewer.passport.relations":"Relations","viewer.passport.relations.show":"Show connected relationships","viewer.passport.relations.hide":"Hide connected relationships","viewer.passport.relations.list":"Connected relationships","viewer.passport.copyRelation":"Copy relation","viewer.passport.copyNode":"Copy node","viewer.passport.copyPinned":"Copy link to pinned relationship","viewer.passport.copySource":"Copy link to source node","viewer.passport.copy.focused.success":"Focused node link copied","viewer.passport.copy.pinned.success":"Pinned relationship link copied","viewer.passport.copy.focused.failed":"Could not copy focused node link","viewer.passport.copy.pinned.failed":"Could not copy pinned relationship link","viewer.passport.relationship.none":"No connected relationships","viewer.passport.relationship.count.one":"{count} relation","viewer.passport.relationship.count.other":"{count} relations","viewer.passport.relationship.show.one":"Show {count} connected relationship","viewer.passport.relationship.show.other":"Show {count} connected relationships","viewer.passport.relationship.summary":"{out} outgoing · {in} incoming{loops}","viewer.passport.relationship.loops":" · {count} loop","viewer.passport.relationship.explorer":"Direct relationship explorer","viewer.passport.relationship.help":"Use arrow keys to explore relationships. Press Enter or Space to pin details; Escape clears.","viewer.passport.relationship.loopsBack":"loops back","viewer.passport.relationship.connectsTo":"connects to","viewer.passport.relationship.connectsFrom":"connects from","viewer.passport.relationship.pinned":"Pinned relationship · {from} → {to} · {label}","viewer.passport.relationship.inspect":"Inspect relationship {index} of {total}: {from} to {to}, {label}. Press Enter for details.","viewer.passport.relationship.group.out":"Outgoing","viewer.passport.relationship.group.in":"Incoming","viewer.passport.relationship.group.loop":"Self loops","viewer.passport.relationship.row":"{group}: {relationship}, {neighbor}","viewer.passport.relationship.direction.out":"OUT →","viewer.passport.relationship.direction.in":"← IN","viewer.passport.relationship.direction.loop":"LOOP","viewer.passport.sourceCount.one":"{count} verified source reference","viewer.passport.sourceCount.other":"{count} verified source references","viewer.passport.sourceMarker":"SRC","viewer.passport.beacon.one":"{count} verified source; focus this node to inspect","viewer.passport.beacon.other":"{count} verified sources; focus this node to inspect","viewer.passport.repository.open":"Open verified repository revision {revision}","viewer.passport.source.open":"Open verified source {path} at revision {revision}","viewer.passport.source.openLink":"Open ↗","viewer.passport.reach.upstream.one":"Trace {count} upstream authored node","viewer.passport.reach.upstream.other":"Trace {count} upstream authored nodes","viewer.passport.reach.downstream.one":"Trace {count} downstream authored node","viewer.passport.reach.downstream.other":"Trace {count} downstream authored nodes","viewer.passport.reach.noUpstream":"No upstream authored nodes","viewer.passport.reach.noDownstream":"No downstream authored nodes","viewer.passport.reach.status":"{direction} · {nodes} nodes · {links} links · max {hops} hops","viewer.route.eyebrow":"Route probe","viewer.route.start":"Choose a start node","viewer.route.start.find":"Find start","viewer.route.start.find.aria":"Find a route start","viewer.route.copy":"Copy link","viewer.route.copy.aria":"Copy link to traced route","viewer.route.clear":"Clear","viewer.route.clear.aria":"Clear route probe","viewer.route.traced":"Traced route","viewer.route.pickTwo":"Pick two semantic nodes on the diagram","viewer.route.pickOne":"Pick a semantic node on the diagram","viewer.route.controls":"Route journey controls","viewer.route.previous":"Previous route position","viewer.route.play":"Play route journey","viewer.route.pause":"Pause route journey","viewer.route.replay":"Replay route journey","viewer.route.next":"Next route position","viewer.route.journey":"Journey","viewer.route.pause.label":"Pause","viewer.route.replay.label":"Replay","viewer.route.overview":"Overview","viewer.route.overview.aria":"Show complete route overview","viewer.route.instructions":"Choose the source, then the destination. Direction matters.","viewer.route.destination":"Choose a destination from {label}","viewer.route.destination.find":"Find target","viewer.route.destination.find.aria":"Find a reachable route destination","viewer.route.differentDestination":"Choose a different destination","viewer.route.distinct":"A route needs two distinct semantic nodes.","viewer.route.unreachable":"No directed route to {label}","viewer.route.unreachable.detail":"{target} is not reachable from {source}. Pick a highlighted destination.","viewer.route.start.instructions":"Select the source. The next step will reveal only directed destinations.","viewer.route.copy.success":"Traced route link copied","viewer.route.copy.failed":"Could not copy traced route link","viewer.route.position":"Route position {index} of {total}: {label}","viewer.route.step":"Step {index} of {total} · {phase} · {label}","viewer.route.motionRequired":"Automatic journey requires Live motion","viewer.route.trigger.clear":"Clear traced route","viewer.route.overview.status":"{nodes} · {hops} · shortest authored route","viewer.route.overview.node.one":"{count} node","viewer.route.overview.node.other":"{count} nodes","viewer.route.overview.hop.one":"{count} directed hop","viewer.route.overview.hop.other":"{count} directed hops","viewer.route.phase.playing":"Playing","viewer.route.phase.complete":"Complete","viewer.route.phase.inspecting":"Inspecting","viewer.route.destination.count.one":"{count} directed destination available. Pick a highlighted node.","viewer.route.destination.count.other":"{count} directed destinations available. Pick a highlighted node.","viewer.route.noOutgoing":"No outgoing route starts here. Clear and choose another source.","viewer.route.result.title":"{source} to {target}","viewer.route.finder.source.title":"Choose route start","viewer.route.finder.source.placeholder":"Search route sources","viewer.route.finder.source.empty":"No matching route sources","viewer.route.finder.source.results":"Nodes that can start a route","viewer.route.finder.source.noun":"route sources","viewer.route.finder.source.badge":"start","viewer.route.finder.target.title":"Destination from {label}","viewer.route.finder.target.placeholder":"Search reachable destinations","viewer.route.finder.target.empty":"No matching reachable destinations","viewer.route.finder.target.results":"Reachable route destinations","viewer.route.finder.target.noun":"reachable destinations","viewer.route.hop.one":"{count} hop","viewer.route.hop.other":"{count} hops","viewer.lens.eyebrow":"Semantic lens","viewer.lens.title":"Compare system roles","viewer.lens.close":"Close semantic lens","viewer.lens.instruction":"Choose up to two semantic kinds. One reveals its real traffic; two compare only direct authored relationships.","viewer.lens.kinds":"Semantic kinds","viewer.lens.choose":"Choose a kind to inspect its nodes and touching relationships.","viewer.lens.copy":"Copy link to semantic lens","viewer.lens.clear":"Clear semantic lens","viewer.lens.open":"Open semantic lens","viewer.lens.openActive":"Open active semantic lens","viewer.lens.legend":"Semantic legend","viewer.lens.legend.inspect.one":"Inspect {label}, {count} node","viewer.lens.legend.inspect.other":"Inspect {label}, {count} nodes","viewer.lens.kind.count.one":"{label}, {count} node","viewer.lens.kind.count.other":"{label}, {count} nodes","viewer.lens.compare.one":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationship","viewer.lens.compare.other":"{first} → {second}: {forward} · {second} → {first}: {reverse} · {count} direct relationships","viewer.lens.single":"{nodes} · {relationships} · connected peers remain visible","viewer.lens.node.one":"{count} {label} node","viewer.lens.node.other":"{count} {label} nodes","viewer.lens.relationship.one":"{count} touching relationship","viewer.lens.relationship.other":"{count} touching relationships","viewer.radar.title":"Semantic radar","viewer.radar.building":"Building overview","viewer.radar.openFull":"Open full semantic radar","viewer.radar.open":"Open radar","viewer.radar.close":"Close semantic radar","viewer.radar.surface":"Diagram overview. Click a node to focus it, or use arrow keys to pan.","viewer.radar.click":"Click node","viewer.radar.drag":"Drag to pan","viewer.radar.space":"Semantic radar needs more MAP space.","viewer.radar.nodes":"Semantic diagram radar nodes","viewer.radar.focus":"Focus {label} from Semantic Radar","viewer.radar.status":"{count} nodes · {viewport}","viewer.radar.fullMap":"{count} nodes · full map","viewer.radar.compacted":"Radar compacted to avoid covering the Semantic Passport or MAP controls.","viewer.radar.cancelWaiting":"Cancel semantic radar waiting for more MAP space","viewer.radar.needsSpace":"Semantic radar needs more visible MAP space","viewer.radar.viewport.full":"full map","viewer.radar.viewport.width":"{percent}% width","viewer.radar.viewport.scale":"{percent}% viewport","viewer.nav.controls":"Diagram view controls","viewer.nav.route":"Trace a directed route","viewer.nav.route.title":"Trace route (R)","viewer.nav.route.short":"PATH","viewer.nav.radar":"Open semantic radar","viewer.nav.radar.title":"Semantic radar (M)","viewer.nav.radar.short":"MAP","viewer.nav.lens":"Open semantic lens","viewer.nav.lens.title":"Semantic lens (L)","viewer.nav.lens.short":"LENS","viewer.nav.find":"Find a node","viewer.nav.find.title":"Find a node (/)","viewer.nav.guide":"Open diagram guide","viewer.nav.guide.title":"Diagram guide (?)","viewer.nav.zoomOut":"Zoom out","viewer.nav.zoomOut.title":"Zoom out (-)","viewer.nav.reset":"Reset diagram view","viewer.nav.reset.title":"Reset view (0)","viewer.nav.read":"READ","viewer.nav.zoomIn":"Zoom in","viewer.nav.zoomIn.title":"Zoom in (+)","viewer.nav.camera":"{hint}. Reset diagram view","viewer.nav.camera.title":"{semantic}{hint} · reset view (0)","viewer.nav.camera.semantic":"Semantic camera active · ","viewer.nav.level.map":"MAP","viewer.nav.level.read":"READ","viewer.nav.level.full":"FULL","viewer.nav.level.auto":"AUTO","viewer.nav.detail.map":"Zoom in to reveal relationship labels and node context","viewer.nav.detail.read":"Zoom in again to reveal tags and annotations","viewer.nav.detail.full":"Full diagram detail","viewer.intent.summary":"{label}. {out} outgoing, {in} incoming{loops}. {total} connections. Press Enter for details.","viewer.intent.loops":", {count} self loop","viewer.common.copied":"Copied","viewer.common.copyFailed":"Copy failed","viewer.common.copyLink":"Copy link","viewer.common.clear":"Clear","viewer.common.close":"Close"}}</script>
     <div class="guided-views no-print" id="guided-views" hidden aria-label="Guided diagram views">
@@ -5131,7 +5131,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     <div class="diagram-container" data-detail-level="read"
          data-preset-badge-editorial-plate="ARCHIFY / PLATE 04">
       <svg viewBox="0 0 1360 810" role="img" lang="en" aria-labelledby="archify-diagram-title archify-diagram-description" data-preset="classic" data-quality-profile="showcase">
-        <title id="archify-diagram-title">FDS Phase 2 물리 아키텍처 · ROSA HCP 초안 (10-16)</title>
+        <title id="archify-diagram-title">FDS Phase 2 물리 아키텍처 · ROSA HCP 초안 (10-18)</title>
         <desc id="archify-diagram-description">An architecture diagram generated by Archify.</desc>
         <!-- Definitions -->
         <defs>
@@ -5156,9 +5156,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect width="100%" height="100%" fill="url(#grid)" />
 
         <!-- Boundaries (behind everything) -->
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" data-composition-frame-label="AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용)" x="216" y="138" width="548" height="624" rx="12" class="c-region" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="0" data-composition-frame-label="AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용)" x="216" y="138" width="548" height="624" rx="12" class="c-region" stroke-width="1"/>
 
-        <rect data-graph-role="structural-frame" data-composition-frame-kind="security-group" data-composition-frame-id="1" data-composition-frame-label="public_transport_a 10.20.110.0/24" x="234" y="156" width="212" height="606" rx="8" class="c-security-group" stroke-width="1"/>
+        <rect data-graph-role="structural-frame" data-composition-frame-kind="security-group" data-composition-frame-id="1" data-composition-frame-label="public_transport_a 10.20.110.0/24" x="244" y="156" width="202" height="606" rx="8" class="c-security-group" stroke-width="1"/>
 
         <rect data-graph-role="structural-frame" data-composition-frame-kind="security-group" data-composition-frame-id="2" data-composition-frame-label="private_a 10.20.10.0/24" x="544" y="196" width="202" height="266" rx="8" class="c-security-group" stroke-width="1"/>
 
@@ -5167,29 +5167,31 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <rect data-graph-role="structural-frame" data-composition-frame-kind="region" data-composition-frame-id="4" data-composition-frame-label="온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24" x="872" y="152" width="456" height="610" rx="12" class="c-region" stroke-width="1"/>
 
         <!-- Connection paths (before components for correct z-order) -->
-        <path data-edge-from="users" data-edge-to="ingress_lb" data-edge-label="HTTPS /api /readyz" data-edge-key="0" data-composition-points="130,370;250,370" d="M 130 370 L 250 370" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
-        <path data-edge-from="ingress_lb" data-edge-to="workers" data-edge-label="Route" data-edge-key="1" data-composition-points="410,371;485,371;485,411;560,411" d="M 410 371 L 477 371 Q 485 371 485 379 L 485 403 Q 485 411 493 411 L 560 411" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="users" data-edge-to="igw" data-edge-label="HTTPS /api /readyz" data-edge-key="0" data-composition-points="120,370;172,370" d="M 120 370 L 172 370" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="ingress_lb" data-edge-to="workers" data-edge-label="443 → Router Pod" data-edge-key="1" data-composition-points="410,371;520,371;520,400;560,400" d="M 410 371 L 512 371 Q 520 371 520 379 L 520 392 Q 520 400 528 400 L 560 400" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         <path data-edge-from="workers" data-edge-to="vpce" data-edge-label="API" data-edge-key="2" data-composition-points="645,380;645,282" d="M 645 380 L 645 282" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         <path data-edge-from="vpce" data-edge-to="rh_cp" data-edge-label="PrivateLink" data-edge-key="3" data-composition-points="645,220;645,112" d="M 645 220 L 645 112" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
-        <path data-edge-from="workers" data-edge-to="nat_igw" data-edge-label="0.0.0.0/0" data-edge-key="4" data-composition-points="560,411;485,411;485,211;410,211" d="M 560 411 L 493 411 Q 485 411 485 403 L 485 219 Q 485 211 477 211 L 410 211" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
-        <path data-edge-from="workers" data-edge-to="relay" data-edge-label="10.1.93.0/24 (OFF)" data-edge-key="5" data-composition-points="560,411;495,411;495,711;430,711" d="M 560 411 L 503 411 Q 495 411 495 419 L 495 703 Q 495 711 487 711 L 430 711" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
-        <path data-edge-from="relay" data-edge-to="vpngw" data-edge-label="IPsec 500/4500" data-edge-key="6" data-composition-points="430,711;900,711" d="M 430 711 L 900 711" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
-        <path data-edge-from="vpngw" data-edge-to="harbor" data-edge-label="443 pull" data-edge-key="7" data-composition-points="975,680;975,656;1106,656;1106,491;1130,491" d="M 975 680 L 975 664 Q 975 656 983 656 L 1098 656 Q 1106 656 1106 648 L 1106 499 Q 1106 491 1114 491 L 1130 491" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        <path data-edge-from="workers" data-edge-to="nat" data-edge-label="0.0.0.0/0" data-edge-key="4" data-composition-points="560,388;530,388;530,211;410,211" d="M 560 388 L 538 388 Q 530 388 530 380 L 530 219 Q 530 211 522 211 L 410 211" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="workers" data-edge-to="relay" data-edge-label="10.1.93.0/24 (OFF) · SG 5432만" data-edge-key="5" data-composition-points="560,430;495,430;495,711;438,711" d="M 560 430 L 503 430 Q 495 430 495 438 L 495 703 Q 495 711 487 711 L 438 711" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="relay" data-edge-to="vpngw" data-edge-label="IPsec 500/4500 · 인터넷(EIP ↔ 교육장 NAT)" data-edge-key="6" data-composition-points="438,711;900,711" d="M 438 711 L 900 711" class="a-security" stroke-width="1.5" marker-end="url(#arrowhead-security)"/>
+        <path data-edge-from="vpngw" data-edge-to="harbor" data-edge-label="443 pull · D22 A안 · Runtime 대기" data-edge-key="7" data-composition-points="975,680;975,656;1106,656;1106,491;1130,491" d="M 975 680 L 975 664 Q 975 656 983 656 L 1098 656 Q 1106 656 1106 648 L 1106 499 Q 1106 491 1114 491 L 1130 491" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         <path data-edge-from="vpngw" data-edge-to="db01" data-edge-label="5432" data-edge-key="8" data-composition-points="1050,711;1130,711" d="M 1050 711 L 1130 711" class="a-default" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="workers" data-edge-to="ecr" data-edge-label="D22 미결" data-edge-key="9" data-composition-points="645,442;645,540" d="M 645 442 L 645 540" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         <path data-edge-from="runner" data-edge-to="rh_cp" data-edge-label="API 경로 미결" data-edge-key="10" data-composition-points="1130,211;937.5,211;937.5,81;745,81" d="M 1130 211 L 945.5 211 Q 937.5 211 937.5 203 L 937.5 89 Q 937.5 81 929.5 81 L 745 81" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
 
+        <path data-edge-from="igw" data-edge-to="ingress_lb" data-edge-key="11" data-composition-points="236,370;262,370" d="M 236 370 L 262 370" class="a-emphasis" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+        <path data-edge-from="nat" data-edge-to="igw" data-edge-label="인터넷 출구" data-edge-key="12" data-composition-points="262,211;226,211;226,343" d="M 262 211 L 234 211 Q 226 211 226 219 L 226 343" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="igw" data-edge-to="aws_svc" data-edge-label="443 · ECR/S3" data-edge-key="13" data-composition-points="190,343;190,112" d="M 190 343 L 190 112" class="a-dashed" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         <!-- Components -->
         <g id="node-users" data-node-id="users" data-node-label="외부 사용자" tabindex="0" role="button" aria-label="Focus 외부 사용자, 인터넷, Architecture component" aria-pressed="false" data-node-kind="external" data-node-sublabel="인터넷" data-node-context="Architecture component">
-          <title>외부 사용자 · 인터넷 · Architecture component</title>
-          <rect x="20" y="340" width="110" height="60" rx="6" class="c-mask"/>
-          <rect x="20" y="340" width="110" height="60" rx="6" class="c-external" stroke-width="1.5"/>
+          <title>외부 사용자 · 인터넷 · HTTPS /api /readyz</title>
+          <rect x="20" y="340" width="100" height="60" rx="6" class="c-mask"/>
+          <rect x="20" y="340" width="100" height="60" rx="6" class="c-external" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="external" class="semantic-sigil s-external" transform="translate(26 346) scale(0.6875)">
             <rect x="2.5" y="5" width="8.5" height="8" rx="1.5"/>
             <path d="M8 2.5h5.5V8M13.5 2.5 7.5 8.5"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="75" y="368" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">외부 사용자</text>
-        <text data-detail="context" x="75" y="384" class="t-muted" font-size="9" text-anchor="middle">인터넷</text>
+          <text data-node-label="" data-detail-anchor="" x="70" y="369" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">외부 사용자</text>
+        <text data-detail="context" x="70" y="385" class="t-muted" font-size="9" text-anchor="middle">인터넷</text>
         </g>
 
         <g id="node-rh_cp" data-node-id="rh_cp" data-node-label="ROSA HCP 컨트롤플레인" tabindex="0" role="button" aria-label="Focus ROSA HCP 컨트롤플레인, Red Hat 관리 계정, Red Hat 관리" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="Red Hat 관리 계정" data-node-tag="4.22.17 고정" data-node-context="Red Hat 관리">
@@ -5204,44 +5206,45 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text data-detail="fine" x="645" y="104" class="t-cloud" font-size="7" text-anchor="middle">4.22.17 고정</text>
         </g>
 
-        <g id="node-nat_igw" data-node-id="nat_igw" data-node-label="IGW + NAT GW ×1" tabindex="0" role="button" aria-label="Focus IGW + NAT GW ×1, az1 단일, AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › public_transport_a 10.20.110.0/24" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="az1 단일" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › public_transport_a 10.20.110.0/24">
-          <title>IGW + NAT GW ×1 · az1 단일 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › public_transport_a 10.20.110.0/24</title>
-          <rect x="250" y="180" width="160" height="62" rx="6" class="c-mask"/>
-          <rect x="250" y="180" width="160" height="62" rx="6" class="c-cloud" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(256 186) scale(0.6875)">
+        <g id="node-nat" data-node-id="nat" data-node-label="NAT GW ×1" tabindex="0" role="button" aria-label="Focus NAT GW ×1, EIP fds-nat · az1, AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › public_transport_a 10.20.110.0/24" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="EIP fds-nat · az1" data-node-tag="private_a/b/c 기본 경로" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › public_transport_a 10.20.110.0/24">
+          <title>NAT GW ×1 · EIP fds-nat · az1 단일 · private_a/b/c의 0.0.0.0/0 대상 · Relay EIP와 별개(Relay는 egress 우회 경로 아님)</title>
+          <rect x="262" y="180" width="148" height="62" rx="6" class="c-mask"/>
+          <rect x="262" y="180" width="148" height="62" rx="6" class="c-cloud" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(268 186) scale(0.6875)">
             <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="330" y="209" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">IGW + NAT GW ×1</text>
-        <text data-detail="context" x="330" y="225" class="t-muted" font-size="9" text-anchor="middle">az1 단일</text>
+          <text data-node-label="" data-detail-anchor="" x="336" y="209" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">NAT GW ×1</text>
+        <text data-detail="context" x="336" y="225" class="t-muted" font-size="9" text-anchor="middle">EIP fds-nat · az1</text>
+        <text data-detail="fine" x="336" y="235" class="t-cloud" font-size="7" text-anchor="middle">private_a/b/c 기본 경로</text>
         </g>
 
-        <g id="node-ingress_lb" data-node-id="ingress_lb" data-node-label="Ingress LB" tabindex="0" role="button" aria-label="Focus Ingress LB, external · 예상 1, AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › public_transport_a 10.20.110.0/24" aria-pressed="false" data-node-kind="security" data-node-sublabel="external · 예상 1" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › public_transport_a 10.20.110.0/24">
-          <title>Ingress LB · external · 예상 1 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › public_transport_a 10.20.110.0/24</title>
-          <rect x="250" y="340" width="160" height="62" rx="6" class="c-mask"/>
-          <rect x="250" y="340" width="160" height="62" rx="6" class="c-security" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(256 346) scale(0.6875)">
+        <g id="node-ingress_lb" data-node-id="ingress_lb" data-node-label="Ingress LB" tabindex="0" role="button" aria-label="Focus Ingress LB, external · 예상 1, AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › public_transport_a 10.20.110.0/24" aria-pressed="false" data-node-kind="security" data-node-sublabel="external · 예상 1" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › public_transport_a 10.20.110.0/24">
+          <title>Ingress LB · external · 예상 1(생성 후 readback) · public_transport_a(kubernetes.io/role/elb) · IGW 경유 진입 → Router Pod(워커)</title>
+          <rect x="262" y="340" width="148" height="62" rx="6" class="c-mask"/>
+          <rect x="262" y="340" width="148" height="62" rx="6" class="c-security" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(268 346) scale(0.6875)">
             <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
             <path d="m5.8 8 1.5 1.5 3-3"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="330" y="369" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Ingress LB</text>
-        <text data-detail="context" x="330" y="385" class="t-muted" font-size="9" text-anchor="middle">external · 예상 1</text>
+          <text data-node-label="" data-detail-anchor="" x="336" y="369" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Ingress LB</text>
+        <text data-detail="context" x="336" y="385" class="t-muted" font-size="9" text-anchor="middle">external · 예상 1</text>
         </g>
 
-        <g id="node-relay" data-node-id="relay" data-node-label="Relay EC2 (Libreswan)" tabindex="0" role="button" aria-label="Focus Relay EC2 (Libreswan), t3.medium · 10.20.110.10, AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › public_transport_a 10.20.110.0/24" aria-pressed="false" data-node-kind="security" data-node-sublabel="t3.medium · 10.20.110.10" data-node-tag="SPOF 수용(D21)" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › public_transport_a 10.20.110.0/24">
-          <title>Relay EC2 (Libreswan) · t3.medium · 10.20.110.10 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › public_transport_a 10.20.110.0/24 · SPOF 수용(D21)</title>
-          <rect x="250" y="680" width="180" height="62" rx="6" class="c-mask"/>
-          <rect x="250" y="680" width="180" height="62" rx="6" class="c-security" stroke-width="1.5"/>
-          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(256 686) scale(0.6875)">
+        <g id="node-relay" data-node-id="relay" data-node-label="Relay EC2 (Libreswan)" tabindex="0" role="button" aria-label="Focus Relay EC2 (Libreswan), t3.medium · 10.20.110.10 · EIP, AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › public_transport_a 10.20.110.0/24" aria-pressed="false" data-node-kind="security" data-node-sublabel="t3.medium · 10.20.110.10 · EIP" data-node-tag="SPOF 수용(D21) · src/dst check off" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › public_transport_a 10.20.110.0/24">
+          <title>Relay EC2 (Libreswan) · t3.medium · 10.20.110.10 · EIP 1:1 NAT · source_dest_check=false · SG: UDP 500/4500 in, TCP 5432 from private_a in · SPOF 수용(D21)</title>
+          <rect x="262" y="680" width="176" height="62" rx="6" class="c-mask"/>
+          <rect x="262" y="680" width="176" height="62" rx="6" class="c-security" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(268 686) scale(0.6875)">
             <path d="M8 2.2 13 4v3.5c0 3.1-1.8 5.4-5 6.5-3.2-1.1-5-3.4-5-6.5V4Z"/>
             <path d="m5.8 8 1.5 1.5 3-3"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="340" y="709" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Relay EC2 (Libreswan)</text>
-        <text data-detail="context" x="340" y="725" class="t-muted" font-size="9" text-anchor="middle">t3.medium · 10.20.110.10</text>
-        <text data-detail="fine" x="340" y="734" class="t-security" font-size="7" text-anchor="middle">SPOF 수용(D21)</text>
+          <text data-node-label="" data-detail-anchor="" x="350" y="709" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Relay EC2 (Libreswan)</text>
+        <text data-detail="context" x="350" y="725" class="t-muted" font-size="9" text-anchor="middle">t3.medium · 10.20.110.10 · EIP</text>
+        <text data-detail="fine" x="350" y="735" class="t-security" font-size="7" text-anchor="middle">SPOF 수용(D21) · src/dst check off</text>
         </g>
 
-        <g id="node-vpce" data-node-id="vpce" data-node-label="PrivateLink VPCE" tabindex="0" role="button" aria-label="Focus PrivateLink VPCE, 예상 1 · 생성 후 확인, AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › private_a 10.20.10.0/24" aria-pressed="false" data-node-kind="security" data-node-sublabel="예상 1 · 생성 후 확인" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › private_a 10.20.10.0/24">
-          <title>PrivateLink VPCE · 예상 1 · 생성 후 확인 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › private_a 10.20.10.0/24</title>
+        <g id="node-vpce" data-node-id="vpce" data-node-label="PrivateLink VPCE" tabindex="0" role="button" aria-label="Focus PrivateLink VPCE, 예상 1 · 생성 후 확인, AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › private_a 10.20.10.0/24" aria-pressed="false" data-node-kind="security" data-node-sublabel="예상 1 · 생성 후 확인" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › private_a 10.20.10.0/24">
+          <title>PrivateLink VPCE · 예상 1 · 생성 후 확인 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › private_a 10.20.10.0/24</title>
           <rect x="560" y="220" width="170" height="62" rx="6" class="c-mask"/>
           <rect x="560" y="220" width="170" height="62" rx="6" class="c-security" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="security" class="semantic-sigil s-security" transform="translate(566 226) scale(0.6875)">
@@ -5252,8 +5255,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text data-detail="context" x="645" y="265" class="t-muted" font-size="9" text-anchor="middle">예상 1 · 생성 후 확인</text>
         </g>
 
-        <g id="node-workers" data-node-id="workers" data-node-label="Worker m5.xlarge ×3" tabindex="0" role="button" aria-label="Focus Worker m5.xlarge ×3, gp3 300GiB · IMDSv2, AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › private_a 10.20.10.0/24" aria-pressed="false" data-node-kind="backend" data-node-sublabel="gp3 300GiB · IMDSv2" data-node-tag="MachinePool workers" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › private_a 10.20.10.0/24">
-          <title>Worker m5.xlarge ×3 · gp3 300GiB · IMDSv2 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) › private_a 10.20.10.0/24 · MachinePool workers</title>
+        <g id="node-workers" data-node-id="workers" data-node-label="Worker m5.xlarge ×3" tabindex="0" role="button" aria-label="Focus Worker m5.xlarge ×3, gp3 300GiB · IMDSv2, AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › private_a 10.20.10.0/24" aria-pressed="false" data-node-kind="backend" data-node-sublabel="gp3 300GiB · IMDSv2" data-node-tag="MachinePool workers" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › private_a 10.20.10.0/24">
+          <title>Worker m5.xlarge ×3 · gp3 300GiB · IMDSv2 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용) › private_a 10.20.10.0/24 · MachinePool workers</title>
           <rect x="560" y="380" width="170" height="62" rx="6" class="c-mask"/>
           <rect x="560" y="380" width="170" height="62" rx="6" class="c-backend" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="backend" class="semantic-sigil s-backend" transform="translate(566 386) scale(0.6875)">
@@ -5264,16 +5267,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text data-detail="fine" x="645" y="434" class="t-backend" font-size="7" text-anchor="middle">MachinePool workers</text>
         </g>
 
-        <g id="node-ecr" data-node-id="ecr" data-node-label="ECR" tabindex="0" role="button" aria-label="Focus ECR, D22 미결 · 대체안, AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용)" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="D22 미결 · 대체안" data-node-tag="미결" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용)">
-          <title>ECR · D22 미결 · 대체안 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용) · 미결</title>
+        <g id="node-private_bc" data-node-id="private_bc" data-node-label="private_b · private_c" tabindex="0" role="button" aria-label="Focus private_b · private_c, 10.20.20.0/24 · 10.20.30.0/24, AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용)" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="10.20.20.0/24 · 10.20.30.0/24" data-node-tag="2b · 2c · 미사용 · NAT route만" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용)">
+          <title>private_b 10.20.20.0/24 (2b) · private_c 10.20.30.0/24 (2c) · Terraform으로 생성 · ROSA 미사용(role tag 없음) · 0.0.0.0/0 → az1 NAT만</title>
           <rect x="560" y="540" width="170" height="62" rx="6" class="c-mask"/>
-          <rect x="560" y="540" width="170" height="62" rx="6" class="c-cloud" stroke-width="1.5"/>
+          <rect x="560" y="540" width="170" height="62" rx="6" class="c-cloud" stroke-width="1.5" stroke-dasharray="4,3"/>
           <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(566 546) scale(0.6875)">
             <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
           </g>
-          <text data-node-label="" data-detail-anchor="" x="645" y="569" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">ECR</text>
-        <text data-detail="context" x="645" y="585" class="t-muted" font-size="9" text-anchor="middle">D22 미결 · 대체안</text>
-        <text data-detail="fine" x="645" y="594" class="t-cloud" font-size="7" text-anchor="middle">미결</text>
+          <text data-node-label="" data-detail-anchor="" x="645" y="569" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">private_b · private_c</text>
+        <text data-detail="context" x="645" y="585" class="t-muted" font-size="9" text-anchor="middle">10.20.20.0/24 · 10.20.30.0/24</text>
+        <text data-detail="fine" x="645" y="595" class="t-cloud" font-size="7" text-anchor="middle">2b · 2c · 미사용 · NAT route만</text>
         </g>
 
         <g id="node-runner" data-node-id="runner" data-node-label="self-hosted Runner" tabindex="0" role="button" aria-label="Focus self-hosted Runner, 10.250.10.20, 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24" aria-pressed="false" data-node-kind="backend" data-node-sublabel="10.250.10.20" data-node-context="온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24">
@@ -5299,8 +5302,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <text data-detail="context" x="975" y="725" class="t-muted" font-size="9" text-anchor="middle">10.1.93.51</text>
         </g>
 
-        <g id="node-harbor" data-node-id="harbor" data-node-label="Harbor" tabindex="0" role="button" aria-label="Focus Harbor, 10.1.93.54:443, 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24" aria-pressed="false" data-node-kind="database" data-node-sublabel="10.1.93.54:443" data-node-context="온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24">
-          <title>Harbor · 10.1.93.54:443 · 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24</title>
+        <g id="node-harbor" data-node-id="harbor" data-node-label="Harbor" tabindex="0" role="button" aria-label="Focus Harbor, 10.1.93.54:443, 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24" aria-pressed="false" data-node-kind="database" data-node-sublabel="10.1.93.54:443" data-node-tag="D22 A안 Primary · 복귀 R7" data-node-context="온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24">
+          <title>Harbor · 10.1.93.54:443 · D22 A안 Primary(Runtime 대기) · 복귀 경로 10.20.0.0/16 via .51(R7, D22 Final 후) · Relay SG·nft에 443 미반영</title>
           <rect x="1130" y="460" width="170" height="62" rx="6" class="c-mask"/>
           <rect x="1130" y="460" width="170" height="62" rx="6" class="c-database" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(1136 466) scale(0.6875)">
@@ -5309,10 +5312,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           </g>
           <text data-node-label="" data-detail-anchor="" x="1215" y="489" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">Harbor</text>
         <text data-detail="context" x="1215" y="505" class="t-muted" font-size="9" text-anchor="middle">10.1.93.54:443</text>
+        <text data-detail="fine" x="1215" y="515" class="t-database" font-size="7" text-anchor="middle">D22 A안 Primary · 복귀 R7</text>
         </g>
 
-        <g id="node-db01" data-node-id="db01" data-node-label="db01 PostgreSQL" tabindex="0" role="button" aria-label="Focus db01 PostgreSQL, 10.1.93.55:5432, 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24" aria-pressed="false" data-node-kind="database" data-node-sublabel="10.1.93.55:5432" data-node-context="온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24">
-          <title>db01 PostgreSQL · 10.1.93.55:5432 · 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24</title>
+        <g id="node-db01" data-node-id="db01" data-node-label="db01 PostgreSQL" tabindex="0" role="button" aria-label="Focus db01 PostgreSQL, 10.1.93.55:5432, 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24" aria-pressed="false" data-node-kind="database" data-node-sublabel="10.1.93.55:5432" data-node-tag="복귀 10.20.0.0/16 via .51 (R6)" data-node-context="온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24">
+          <title>db01 PostgreSQL · 10.1.93.55:5432 · 복귀 경로 10.20.0.0/16 via vpn-gw01 .51 (static, R6)</title>
           <rect x="1130" y="680" width="170" height="62" rx="6" class="c-mask"/>
           <rect x="1130" y="680" width="170" height="62" rx="6" class="c-database" stroke-width="1.5"/>
           <g aria-hidden="true" data-semantic-sigil="database" class="semantic-sigil s-database" transform="translate(1136 686) scale(0.6875)">
@@ -5321,16 +5325,40 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           </g>
           <text data-node-label="" data-detail-anchor="" x="1215" y="709" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">db01 PostgreSQL</text>
         <text data-detail="context" x="1215" y="725" class="t-muted" font-size="9" text-anchor="middle">10.1.93.55:5432</text>
+        <text data-detail="fine" x="1215" y="735" class="t-database" font-size="7" text-anchor="middle">복귀 10.20.0.0/16 via .51 (R6)</text>
+        </g>
+
+        <g id="node-igw" data-node-id="igw" data-node-label="IGW" tabindex="0" role="button" aria-label="Focus IGW, VPC 출입구, AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용)" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="VPC 출입구" data-node-context="AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용)">
+          <title>Internet Gateway · VPC 출입구 · 외부 사용자 → Ingress LB 진입과 NAT GW 인터넷 출구가 모두 통과</title>
+          <rect x="172" y="343" width="64" height="54" rx="6" class="c-mask"/>
+          <rect x="172" y="343" width="64" height="54" rx="6" class="c-cloud" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(178 349) scale(0.6875)">
+            <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="204" y="372" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">IGW</text>
+        <text data-detail="context" x="204" y="388" class="t-muted" font-size="9" text-anchor="middle">VPC 출입구</text>
+        </g>
+
+        <g id="node-aws_svc" data-node-id="aws_svc" data-node-label="AWS 리전 서비스" tabindex="0" role="button" aria-label="Focus AWS 리전 서비스, ECR · S3 (VPC 밖), AWS ap-northeast-2 (VPC 밖)" aria-pressed="false" data-node-kind="cloud" data-node-sublabel="ECR · S3 (VPC 밖)" data-node-tag="ECR: D22 A안 수동 전환 · S3: OADP IF-20" data-node-context="AWS ap-northeast-2 (VPC 밖)">
+          <title>AWS 리전 서비스(VPC 밖) · ECR: D22 A안(Harbor Primary + ECR 수동 전환, Runtime 대기) · S3: OADP 백업(IF-20 PROVISIONAL) · VPC Endpoint 없음 → NAT·IGW 경유 443</title>
+          <rect x="20" y="50" width="190" height="62" rx="6" class="c-mask"/>
+          <rect x="20" y="50" width="190" height="62" rx="6" class="c-cloud" stroke-width="1.5"/>
+          <g aria-hidden="true" data-semantic-sigil="cloud" class="semantic-sigil s-cloud" transform="translate(26 56) scale(0.6875)">
+            <path d="M4.3 12.5h7.3a2.4 2.4 0 0 0 .2-4.8 4 4 0 0 0-7.5-1.3A3.1 3.1 0 0 0 4.3 12.5Z"/>
+          </g>
+          <text data-node-label="" data-detail-anchor="" x="115" y="79" class="t-primary" font-size="11" font-weight="600" text-anchor="middle">AWS 리전 서비스</text>
+        <text data-detail="context" x="115" y="95" class="t-muted" font-size="9" text-anchor="middle">ECR · S3 (VPC 밖)</text>
+        <text data-detail="fine" x="115" y="105" class="t-cloud" font-size="7" text-anchor="middle">ECR: D22 A안 수동 전환 · S3: OADP IF-20</text>
         </g>
 
         <!-- Connection labels -->
-        <g data-detail="context" data-edge-from="users" data-edge-to="ingress_lb" data-edge-label="HTTPS /api /readyz" data-edge-key="0">
-          <rect x="141.8" y="350" width="96.39999999999999" height="14" rx="3" class="c-mask"/>
-          <text x="190" y="360" class="t-backend" font-size="8" text-anchor="middle">HTTPS /api /readyz</text>
+        <g data-detail="context" data-edge-from="users" data-edge-to="igw" data-edge-label="HTTPS /api /readyz" data-edge-key="0">
+          <rect x="98" y="404" width="96" height="14" rx="3" class="c-mask"/>
+          <text x="146" y="414" class="t-backend" font-size="8" text-anchor="middle">HTTPS /api /readyz</text>
         </g>
-        <g data-detail="context" data-edge-from="ingress_lb" data-edge-to="workers" data-edge-label="Route" data-edge-key="1">
-          <rect x="430" y="361" width="34" height="14" rx="3" class="c-mask"/>
-          <text x="447" y="371" class="t-backend" font-size="8" text-anchor="middle">Route</text>
+        <g data-detail="context" data-edge-from="ingress_lb" data-edge-to="workers" data-edge-label="443 → Router Pod" data-edge-key="1">
+          <rect x="425" y="355" width="80" height="14" rx="3" class="c-mask"/>
+          <text x="465" y="365" class="t-backend" font-size="8" text-anchor="middle">443 → Router Pod</text>
         </g>
         <g data-detail="context" data-edge-from="workers" data-edge-to="vpce" data-edge-label="API" data-edge-key="2">
           <rect x="630" y="360" width="30" height="14" rx="3" class="c-mask"/>
@@ -5340,44 +5368,50 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <rect x="613.6" y="130" width="62.8" height="14" rx="3" class="c-mask"/>
           <text x="645" y="140" class="t-security" font-size="8" text-anchor="middle">PrivateLink</text>
         </g>
-        <g data-detail="context" data-edge-from="workers" data-edge-to="nat_igw" data-edge-label="0.0.0.0/0" data-edge-key="4">
-          <rect x="458.4" y="291" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
-          <text x="485" y="301" class="t-messagebus" font-size="8" text-anchor="middle">0.0.0.0/0</text>
+        <g data-detail="context" data-edge-from="workers" data-edge-to="nat" data-edge-label="0.0.0.0/0" data-edge-key="4">
+          <rect x="503.4" y="291" width="53.2" height="14" rx="3" class="c-mask"/>
+          <text x="530" y="301" class="t-messagebus" font-size="8" text-anchor="middle">0.0.0.0/0</text>
         </g>
-        <g data-detail="context" data-edge-from="workers" data-edge-to="relay" data-edge-label="10.1.93.0/24 (OFF)" data-edge-key="5">
-          <rect x="446.8" y="620" width="96.39999999999999" height="14" rx="3" class="c-mask"/>
-          <text x="495" y="630" class="t-messagebus" font-size="8" text-anchor="middle">10.1.93.0/24 (OFF)</text>
+        <g data-detail="context" data-edge-from="workers" data-edge-to="relay" data-edge-label="10.1.93.0/24 (OFF) · SG 5432만" data-edge-key="5">
+          <rect x="420" y="620" width="150" height="14" rx="3" class="c-mask"/>
+          <text x="495" y="630" class="t-messagebus" font-size="8" text-anchor="middle">10.1.93.0/24 (OFF) · SG 5432만</text>
         </g>
-        <g data-detail="context" data-edge-from="relay" data-edge-to="vpngw" data-edge-label="IPsec 500/4500" data-edge-key="6">
-          <rect x="626.4" y="691" width="77.2" height="14" rx="3" class="c-mask"/>
-          <text x="665" y="701" class="t-security" font-size="8" text-anchor="middle">IPsec 500/4500</text>
+        <g data-detail="context" data-edge-from="relay" data-edge-to="vpngw" data-edge-label="IPsec 500/4500 · 인터넷(EIP ↔ 교육장 NAT)" data-edge-key="6">
+          <rect x="567" y="691" width="196" height="14" rx="3" class="c-mask"/>
+          <text x="665" y="701" class="t-security" font-size="8" text-anchor="middle">IPsec 500/4500 · 인터넷(EIP ↔ 교육장 NAT)</text>
         </g>
-        <g data-detail="context" data-edge-from="vpngw" data-edge-to="harbor" data-edge-label="443 pull" data-edge-key="7">
-          <rect x="1016.3" y="636" width="48.4" height="14" rx="3" class="c-mask"/>
-          <text x="1040.5" y="646" class="t-muted" font-size="8" text-anchor="middle">443 pull</text>
+        <g data-detail="context" data-edge-from="vpngw" data-edge-to="harbor" data-edge-label="443 pull · D22 A안 · Runtime 대기" data-edge-key="7">
+          <rect x="955" y="636" width="160" height="14" rx="3" class="c-mask"/>
+          <text x="1035" y="646" class="t-messagebus" font-size="8" text-anchor="middle">443 pull · D22 A안 · Runtime 대기</text>
         </g>
         <g data-detail="context" data-edge-from="vpngw" data-edge-to="db01" data-edge-label="5432" data-edge-key="8">
           <rect x="1075" y="691" width="30" height="14" rx="3" class="c-mask"/>
           <text x="1090" y="701" class="t-muted" font-size="8" text-anchor="middle">5432</text>
-        </g>
-        <g data-detail="context" data-edge-from="workers" data-edge-to="ecr" data-edge-label="D22 미결" data-edge-key="9">
-          <rect x="675.8" y="481" width="48.4" height="14" rx="3" class="c-mask"/>
-          <text x="700" y="491" class="t-messagebus" font-size="8" text-anchor="middle">D22 미결</text>
         </g>
         <g data-detail="context" data-edge-from="runner" data-edge-to="rh_cp" data-edge-label="API 경로 미결" data-edge-key="10">
           <rect x="901.3" y="126" width="72.4" height="14" rx="3" class="c-mask"/>
           <text x="937.5" y="136" class="t-messagebus" font-size="8" text-anchor="middle">API 경로 미결</text>
         </g>
 
+        <g data-detail="context" data-edge-from="nat" data-edge-to="igw" data-edge-label="인터넷 출구" data-edge-key="12">
+          <rect x="200" y="290" width="52" height="14" rx="3" class="c-mask"/>
+          <text x="226" y="300" class="t-messagebus" font-size="8" text-anchor="middle">인터넷 출구</text>
+        </g>
+
+        <g data-detail="context" data-edge-from="igw" data-edge-to="aws_svc" data-edge-label="443 · ECR/S3" data-edge-key="13">
+          <rect x="159" y="260" width="62" height="14" rx="3" class="c-mask"/>
+          <text x="190" y="270" class="t-messagebus" font-size="8" text-anchor="middle">443 · ECR/S3</text>
+        </g>
+
         <!-- Boundary labels (foreground masks keep routes out of titles) -->
-        <g data-graph-role="structural-frame-label" data-composition-frame-id="0" data-composition-frame-kind="region" data-composition-frame-label="AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용)">
-          <rect data-graph-role="structural-frame-label-mask" x="220" y="142" width="296.2" height="16" rx="3" class="c-mask"/>
-          <text data-boundary-label="" x="224" y="155" class="t-cloud" font-size="9" font-weight="600">AWS ap-northeast-2 · VPC 10.20.0.0/16 (az1=2a만 사용)</text>
+        <g data-graph-role="structural-frame-label" data-composition-frame-id="0" data-composition-frame-kind="region" data-composition-frame-label="AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용)">
+          <rect data-graph-role="structural-frame-label-mask" x="220" y="142" width="306" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="224" y="155" class="t-cloud" font-size="9" font-weight="600">AWS ap-northeast-2 · VPC 10.20.0.0/16 (ROSA는 2a만 사용)</text>
         </g>
 
         <g data-graph-role="structural-frame-label" data-composition-frame-id="1" data-composition-frame-kind="security-group" data-composition-frame-label="public_transport_a 10.20.110.0/24">
-          <rect data-graph-role="structural-frame-label-mask" x="238" y="160" width="188.2" height="16" rx="3" class="c-mask"/>
-          <text data-boundary-label="" x="242" y="173" class="t-security" font-size="9" font-weight="600">public_transport_a 10.20.110.0/24</text>
+          <rect data-graph-role="structural-frame-label-mask" x="248" y="160" width="188.2" height="16" rx="3" class="c-mask"/>
+          <text data-boundary-label="" x="252" y="173" class="t-security" font-size="9" font-weight="600">public_transport_a 10.20.110.0/24</text>
         </g>
 
         <g data-graph-role="structural-frame-label" data-composition-frame-id="2" data-composition-frame-kind="security-group" data-composition-frame-label="private_a 10.20.10.0/24">
@@ -5590,7 +5624,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         </div>
         <ul>
           <li>&bull; ROSA HCP · public 클러스터 · 단일 AZ 2a</li>
-          <li>&bull; Worker 3대 private_a · NAT 1개 공용 (private_b/c 미사용)</li>
+          <li>&bull; Worker 3대 private_a · NAT 1개 공용 (private_b/c는 생성만, 미사용)</li>
+          <li>&bull; 진입: 인터넷 → IGW → Ingress LB → Router Pod · 출구: NAT → IGW</li>
+          <li>&bull; D22 A안: Harbor Primary + ECR 수동 전환 (Runtime 대기)</li>
           <li>&bull; machine 10.20.0.0/16 · pod 10.128.0.0/14 · svc 172.30.0.0/16</li>
         </ul>
       </div>
@@ -5601,9 +5637,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <h3>미결 · 점선</h3>
         </div>
         <ul>
-          <li>&bull; D22 레지스트리: ECR 대체안 포함 여부</li>
+          <li>&bull; D22 Runtime 확인: Harbor 443은 Relay SG·nft 미반영</li>
+          <li>&bull; OADP → S3 (IF-20) PROVISIONAL</li>
           <li>&bull; Runner → ROSA API 경로(인터넷/VPN)</li>
-          <li>&bull; 온프렘 Route: #37 T3/T6 통과 후 ON</li>
+          <li>&bull; 온프렘 Route: #37 T3/T6 통과 후 ON (R2), db01 복귀 R6 · Harbor 복귀 R7</li>
           <li>&bull; VPCE·LB 개수: 생성 후 readback</li>
         </ul>
       </div>
