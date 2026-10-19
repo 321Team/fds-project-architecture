@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1차 물리 아키텍처 · 정본 반영</title>
+<link rel="stylesheet" href="current.css">
+<link rel="stylesheet" href="context.css">
+</head>
+<body>
+<main>
+<nav>
+<a href="index.html">← 문서 목록</a>
+<a href="overview.html">서비스 흐름</a>
+<a href="canonical-status.html">근거와 확인 범위</a>
+</nav>
+<p class="eyebrow">321Team · FDS · docs-v3.1.22</p>
+<h1>1차 물리 아키텍처 · 정본 반영</h1>
+<p>승인된 8대 호스트 배치와 후속 앱 분산 관측을 함께 정리했습니다. 호스트 전체의 최신 VM 목록을 다시 조사한 자료는 아닙니다.</p>
+<div class="revision-note">
+<strong>배치 기준과 실행 관측의 구분:</strong> 아래 호스트 배치는 정본이 상속한 설계이며, API·엔진의 Worker별 분산은 2026-10-19 11:15~11:32 KST 후속 기록을 따릅니다. 10월 18일 Worker 3 집중 배치는 과거 관측입니다.</div>
+<h2>호스트와 VM의 책임 배치</h2>
+<div class="hosts">
+<section class="card">
+<span class="tag">Server 01</span>
+<h3>관리·운영</h3>
+<p>관리 게이트웨이, Ansible, Runner, 외부 모니터, Kubernetes API LB, DNS 1</p>
+</section>
+<section class="card">
+<span class="tag">Server 02</span>
+<h3>Control Plane 1</h3>
+<p>control01</p>
+</section>
+<section class="card">
+<span class="tag">Server 03</span>
+<h3>Control Plane 2</h3>
+<p>control02</p>
+</section>
+<section class="card">
+<span class="tag">Server 04</span>
+<h3>Control Plane 3</h3>
+<p>control03</p>
+</section>
+<section class="card">
+<span class="tag">Server 05</span>
+<h3>Worker 1</h3>
+<p>worker01 · API 1 / 엔진 1 관측</p>
+</section>
+<section class="card">
+<span class="tag">Server 06</span>
+<h3>Worker 2</h3>
+<p>worker02 · API 1 / 엔진 1 관측</p>
+</section>
+<section class="card">
+<span class="tag">Server 07</span>
+<h3>Worker 3</h3>
+<p>worker03 · API 1 / 엔진 1 관측 · 모니터링 로컬 저장소</p>
+</section>
+<section class="card">
+<span class="tag">Server 08</span>
+<h3>공유 서비스</h3>
+<p>nginx edge, Harbor, PostgreSQL, DNS 2</p>
+</section>
+</div>
+<h2>네트워크 경계</h2>
+<div class="grid">
+<section class="card">
+<span class="tag">VMnet0</span>
+<h3>업무·클러스터 망</h3>
+<p>10.1.93.0/24<br>서비스 진입, 제어 노드·Worker, Harbor·DB·DNS를 연결합니다.</p>
+</section>
+<section class="card">
+<span class="tag">VMnet1</span>
+<h3>관리 망</h3>
+<p>10.250.10.0/24<br>관리 게이트웨이를 통해 승인된 작업 경로를 연결합니다. 내부 source NAT 금지·관리망 복귀 경로 기준을 유지합니다.</p>
+</section>
+</div>
+<p class="small">FDS workload VM은 VMnet8에 연결하지 않는 설계입니다. 이 표는 모든 호스트에서 현재 적용 상태를 재확인했다는 뜻이 아닙니다.</p>
+<h2>장애·복구를 읽는 기준</h2>
+<ul>
+<li>API와 엔진은 각 3개 복제본의 노드별 분산 관측이 있습니다. 이것만으로 모든 장애 상황의 무중단을 입증하지 않습니다.</li>
+<li>모니터링 핵심 3종은 단일 복제본과 Worker 3 로컬 저장소에 의존합니다. 노드 장애 시 저장소가 자동으로 다른 Worker로 이동하지 않습니다.</li>
+<li>Edge·Harbor·DB 등 공유 서비스가 Server 8에 함께 배치되어 있어 해당 호스트 장애의 공동 영향을 고려해야 합니다.</li>
+<li>2차 VPN 게이트웨이는 1차 구현 배치에 포함하지 않습니다. 클라우드 연계는 별도의 2차 확정 설계와 실행 검증 대상입니다.</li>
+</ul>
+<p>
+<a href="phase1_logical_current.html">논리 흐름 보기 →</a> · <a href="physical_architecture.html">이전 v3.1.19 도면</a>
+</p>
+<footer>기준: 2026-10-19 발행 정본 · 팀 프로젝트 공개 설명 자료. 서버 변경·새 시험은 수행하지 않았습니다.</footer>
+</main>
+</body>
+</html>
