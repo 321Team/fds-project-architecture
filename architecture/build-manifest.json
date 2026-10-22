@@ -80,9 +80,9 @@
       "path": "phase2_logical_architecture.html",
       "source": "architecture/phase2-logical.archify.md",
       "type": "explainer",
-      "sourceSha256": "271eb43f8277dd354212e6561931de59346bf602c0d9bab0e67e09163138e4f5",
-      "sha256": "2cbde1b679b382c44275ae55615710d201022660892dacb1a6c8cf5b1bca04cf",
-      "bytes": 667421,
+      "sourceSha256": "e6aac2bddccdb5d3b1bdc5dd0aa08af02815cf46699cf696c082faf30cb32fdc",
+      "sha256": "5268d7203fbde66bd1b7a9aa3b9872dafce3eddaea99d97f77629787d42ed232",
+      "bytes": 667412,
       "gates": {
         "validate": "pass",
         "deliver": "pass",
