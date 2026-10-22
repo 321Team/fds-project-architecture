@@ -1,0 +1,383 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "1차 논리 아키텍처",
+    "output": "diagrams/phase1-logical.html",
+    "locale": "ko",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/321Team/fds-project-architecture.git",
+      "revision": "517b51fcafd572e5f0296774ccd0ad21b23553a2"
+    }
+  },
+  "components": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "사용자",
+      "sublabel": "거래 요청",
+      "pos": [
+        40,
+        90
+      ],
+      "size": [
+        140,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 31,
+          "end_line": 36
+        }
+      ]
+    },
+    {
+      "id": "edge",
+      "type": "security",
+      "label": "nginx edge01",
+      "sublabel": "HTTP 80",
+      "pos": [
+        330,
+        90
+      ],
+      "size": [
+        170,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 34,
+          "end_line": 39
+        }
+      ]
+    },
+    {
+      "id": "txapi",
+      "type": "backend",
+      "label": "거래 API ×3",
+      "sublabel": "transaction-api :8000",
+      "pos": [
+        650,
+        90
+      ],
+      "size": [
+        200,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 38,
+          "end_line": 43
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "type": "backend",
+      "label": "탐지 엔진 ×3",
+      "sublabel": "fds-engine :8001",
+      "pos": [
+        980,
+        90
+      ],
+      "size": [
+        190,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 41,
+          "end_line": 46
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "db01 :5432",
+      "pos": [
+        650,
+        310
+      ],
+      "size": [
+        200,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 44,
+          "end_line": 49
+        }
+      ]
+    },
+    {
+      "id": "runner",
+      "type": "backend",
+      "label": "배포 Runner",
+      "sublabel": "테스트와 보안 검사",
+      "pos": [
+        40,
+        500
+      ],
+      "size": [
+        170,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 46,
+          "end_line": 51
+        }
+      ]
+    },
+    {
+      "id": "harbor",
+      "type": "database",
+      "label": "Harbor",
+      "sublabel": "이미지 저장소",
+      "pos": [
+        350,
+        500
+      ],
+      "size": [
+        170,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 50,
+          "end_line": 55
+        }
+      ]
+    },
+    {
+      "id": "workers",
+      "type": "backend",
+      "label": "Worker ×3",
+      "sublabel": "API와 엔진 실행",
+      "pos": [
+        760,
+        500
+      ],
+      "size": [
+        190,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 53,
+          "end_line": 58
+        }
+      ]
+    },
+    {
+      "id": "monitoring",
+      "type": "cloud",
+      "label": "모니터링",
+      "sublabel": "Prometheus / Grafana",
+      "pos": [
+        980,
+        500
+      ],
+      "size": [
+        210,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 65,
+          "end_line": 70
+        }
+      ]
+    },
+    {
+      "id": "admin",
+      "type": "external",
+      "label": "관리 작업",
+      "sublabel": "승인된 접근",
+      "pos": [
+        40,
+        730
+      ],
+      "size": [
+        170,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 55,
+          "end_line": 60
+        }
+      ]
+    },
+    {
+      "id": "api_lb",
+      "type": "security",
+      "label": "HAProxy API LB",
+      "sublabel": "TLS 통과 :6443",
+      "pos": [
+        350,
+        730
+      ],
+      "size": [
+        200,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 58,
+          "end_line": 63
+        }
+      ]
+    },
+    {
+      "id": "control",
+      "type": "backend",
+      "label": "Control Plane ×3",
+      "sublabel": "Kubernetes API",
+      "pos": [
+        760,
+        730
+      ],
+      "size": [
+        200,
+        68
+      ],
+      "sources": [
+        {
+          "path": "phase1_logical_current.html",
+          "line": 61,
+          "end_line": 66
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "client-to-edge",
+      "from": "client",
+      "to": "edge",
+      "label": "HTTP 80",
+      "variant": "emphasis"
+    },
+    {
+      "id": "edge-to-txapi",
+      "from": "edge",
+      "to": "txapi",
+      "label": "NodePort 30080",
+      "variant": "emphasis"
+    },
+    {
+      "id": "txapi-to-engine",
+      "from": "txapi",
+      "to": "engine",
+      "label": "TCP 8001",
+      "variant": "emphasis"
+    },
+    {
+      "id": "txapi-to-db",
+      "from": "txapi",
+      "to": "db",
+      "label": "저장·조회 5432",
+      "variant": "security"
+    },
+    {
+      "id": "runner-to-harbor",
+      "from": "runner",
+      "to": "harbor",
+      "label": "검사 통과 후 push",
+      "variant": "security"
+    },
+    {
+      "id": "workers-to-harbor",
+      "from": "workers",
+      "to": "harbor",
+      "label": "HTTPS pull 443",
+      "variant": "default"
+    },
+    {
+      "id": "monitoring-to-workers",
+      "from": "monitoring",
+      "to": "workers",
+      "label": "노드·앱 지표",
+      "variant": "default"
+    },
+    {
+      "id": "admin-to-api_lb",
+      "from": "admin",
+      "to": "api_lb",
+      "label": "관리 접속",
+      "variant": "default"
+    },
+    {
+      "id": "api_lb-to-control",
+      "from": "api_lb",
+      "to": "control",
+      "label": "TCP 6443",
+      "variant": "default"
+    }
+  ],
+  "boundaries": [],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "정본과 검증 범위",
+      "items": [
+        "1차 프로젝트는 조건부 최종 인수·종결 되었습니다. 구성 설명과 관측 시점의 시험 결과를 구분하며, 남은 보안·복구 한계를 없어진 것으로 표시하지 않습니다.",
+        "기준: docs-v3.1.22 / 2026-10-19. 이번 변경은 도면 변환이며 새 서버 시험이 아닙니다."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "서비스와 데이터 경로",
+      "items": [
+        "nginx HTTP 80 → Worker NodePort 30080 → API Service 80 / Pod 8000. 1차 edge HTTPS는 미충족입니다.",
+        "API → 탐지 엔진 8001 / API → PostgreSQL 5432. 엔진의 DB 직접 접근은 차단합니다.",
+        "10월 19일 배포 후 Worker마다 API 1개·엔진 1개가 관측됐습니다. 전 구간 무손실·지속 가용성을 보장하지 않습니다."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "운영·관측의 한계",
+      "items": [
+        "10월 19일 11:30:58 KST에 정확한 관측 대상 23/23을 확인했습니다. 지속 정상·실패 주입·전체 경보 경로 검증과 구분합니다.",
+        "기존 백엔드 제외·복귀 검증, 이미지 검사·전송·배포 기록을 연결합니다. 과거 취약점 검사 결과를 현재 DB 기준의 재검사로 해석하지 않습니다."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "보안·자동화",
+      "items": [
+        "기본 통신 차단과 필요한 경로 허용, 역할별 접근권한, 비밀정보 분리, 승인된 Ansible 관리 작업을 적용 대상으로 다룹니다. 부팅 시 보호 전환, 인증정보 회전, 일부 Probe 실패 전이와 전체 자동화 호출 경로의 검증 한계는 유지합니다."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "백업·복구",
+      "items": [
+        "PostgreSQL의 기존 덤프·격리 복원·업무 확인·원복 기록을 연결합니다. 모니터링은 단일 복제본·Worker 3의 로컬 저장소에 의존하므로 다른 노드로 자동 복구된다고 표현하지 않습니다."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "모니터링 구성",
+      "items": [
+        "클러스터의 Prometheus·Alertmanager·Grafana와 노드 지표, 별도 외부 Watchdog를 구분합니다.",
+        "10월 19일의 23/23 대상 관측을 전체 경보 경로 검증이나 지속 정상으로 해석하지 않습니다."
+      ]
+    }
+  ]
+}

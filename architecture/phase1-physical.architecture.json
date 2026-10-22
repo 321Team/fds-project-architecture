@@ -1,0 +1,305 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "1차 물리·네트워크 아키텍처",
+    "output": "diagrams/phase1-physical.html",
+    "locale": "ko",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/321Team/fds-project-architecture.git",
+      "revision": "517b51fcafd572e5f0296774ccd0ad21b23553a2"
+    }
+  },
+  "components": [
+    {
+      "id": "server01",
+      "type": "security",
+      "label": "Server 01",
+      "sublabel": "관리·운영 VM",
+      "pos": [
+        340,
+        90
+      ],
+      "size": [
+        250,
+        78
+      ],
+      "tag": "관리 GW / Ansible / Runner / API LB / DNS 1",
+      "sources": [
+        {
+          "path": "phase1_physical_current.html",
+          "line": 25,
+          "end_line": 30
+        }
+      ]
+    },
+    {
+      "id": "server02",
+      "type": "backend",
+      "label": "Server 02",
+      "sublabel": "Control Plane 1",
+      "pos": [
+        680,
+        90
+      ],
+      "size": [
+        250,
+        78
+      ],
+      "tag": "control01",
+      "sources": [
+        {
+          "path": "phase1_physical_current.html",
+          "line": 30,
+          "end_line": 35
+        }
+      ]
+    },
+    {
+      "id": "server03",
+      "type": "backend",
+      "label": "Server 03",
+      "sublabel": "Control Plane 2",
+      "pos": [
+        1020,
+        90
+      ],
+      "size": [
+        250,
+        78
+      ],
+      "tag": "control02",
+      "sources": [
+        {
+          "path": "phase1_physical_current.html",
+          "line": 35,
+          "end_line": 40
+        }
+      ]
+    },
+    {
+      "id": "server04",
+      "type": "backend",
+      "label": "Server 04",
+      "sublabel": "Control Plane 3",
+      "pos": [
+        340,
+        300
+      ],
+      "size": [
+        250,
+        78
+      ],
+      "tag": "control03",
+      "sources": [
+        {
+          "path": "phase1_physical_current.html",
+          "line": 40,
+          "end_line": 45
+        }
+      ]
+    },
+    {
+      "id": "server05",
+      "type": "backend",
+      "label": "Server 05",
+      "sublabel": "Worker 1",
+      "pos": [
+        680,
+        300
+      ],
+      "size": [
+        250,
+        78
+      ],
+      "tag": "API 1 / 엔진 1 관측",
+      "sources": [
+        {
+          "path": "phase1_physical_current.html",
+          "line": 45,
+          "end_line": 50
+        }
+      ]
+    },
+    {
+      "id": "server06",
+      "type": "backend",
+      "label": "Server 06",
+      "sublabel": "Worker 2",
+      "pos": [
+        1020,
+        300
+      ],
+      "size": [
+        250,
+        78
+      ],
+      "tag": "API 1 / 엔진 1 관측",
+      "sources": [
+        {
+          "path": "phase1_physical_current.html",
+          "line": 50,
+          "end_line": 55
+        }
+      ]
+    },
+    {
+      "id": "server07",
+      "type": "backend",
+      "label": "Server 07",
+      "sublabel": "Worker 3",
+      "pos": [
+        340,
+        510
+      ],
+      "size": [
+        250,
+        78
+      ],
+      "tag": "모니터링 로컬 저장소",
+      "sources": [
+        {
+          "path": "phase1_physical_current.html",
+          "line": 55,
+          "end_line": 60
+        }
+      ]
+    },
+    {
+      "id": "server08",
+      "type": "database",
+      "label": "Server 08",
+      "sublabel": "공유 서비스 VM",
+      "pos": [
+        680,
+        510
+      ],
+      "size": [
+        250,
+        78
+      ],
+      "tag": "nginx / Harbor / PostgreSQL / DNS 2",
+      "sources": [
+        {
+          "path": "phase1_physical_current.html",
+          "line": 60,
+          "end_line": 65
+        }
+      ]
+    },
+    {
+      "id": "management",
+      "type": "security",
+      "label": "관리 망 VMnet1",
+      "sublabel": "10.250.10.0/24",
+      "pos": [
+        40,
+        90
+      ],
+      "size": [
+        210,
+        78
+      ],
+      "sources": [
+        {
+          "path": "phase1_physical_current.html",
+          "line": 73,
+          "end_line": 78
+        }
+      ]
+    },
+    {
+      "id": "service_net",
+      "type": "cloud",
+      "label": "업무·클러스터 망",
+      "sublabel": "VMnet0 10.1.93.0/24",
+      "pos": [
+        40,
+        510
+      ],
+      "size": [
+        240,
+        78
+      ],
+      "sources": [
+        {
+          "path": "phase1_physical_current.html",
+          "line": 68,
+          "end_line": 73
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "management-to-server01",
+      "from": "management",
+      "to": "server01",
+      "label": "관리 GW",
+      "variant": "default"
+    },
+    {
+      "id": "server01-to-service_net",
+      "from": "server01",
+      "to": "service_net",
+      "label": "승인된 관리 경로",
+      "variant": "default"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "교육장: 호스트별 VM 배치",
+      "wraps": [
+        "server01",
+        "server02",
+        "server03",
+        "server04",
+        "server05",
+        "server06",
+        "server07",
+        "server08"
+      ],
+      "pad": 22
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "배치 기준과 실행 관측",
+      "items": [
+        "배치 기준과 실행 관측의 구분: 아래 호스트 배치는 정본이 상속한 설계이며, API·엔진의 Worker별 분산은 2026-10-19 11:15~11:32 KST 후속 기록을 따릅니다. 10월 18일 Worker 3 집중 배치는 과거 관측입니다.",
+        "1차 조건부 최종 인수·종결. 물리 호스트 위 VM의 책임을 나타냅니다.",
+        "10월 18일 Worker 3 집중 배치는 과거 관측입니다. 10월 19일 11:15~11:32 KST 앱 분산 관측과 구분합니다."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "네트워크 경계",
+      "items": [
+        "VMnet0 10.1.93.0/24: 서비스 진입, 제어 노드와 Worker, Harbor·DB·DNS를 연결합니다.",
+        "VMnet1 10.250.10.0/24: 관리 게이트웨이를 통한 승인된 작업 경로. 내부 source NAT 금지와 관리망 복귀 경로를 유지합니다.",
+        "FDS workload VM은 VMnet8에 연결하지 않습니다. 모든 호스트의 현재 적용 상태를 재확인한 것은 아닙니다."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "장애·복구의 범위",
+      "items": [
+        "API와 엔진은 각각 3개 복제본의 노드별 분산 관측이 있습니다. 모든 장애 상황의 무중단을 입증하지 않습니다.",
+        "모니터링 핵심 3종은 단일 복제본과 Worker 3 로컬 저장소에 의존하며, 다른 Worker로 저장소가 자동 이동하지 않습니다.",
+        "Edge·Harbor·DB가 Server 8에 함께 배치돼 호스트 장애의 공동 영향을 고려해야 합니다.",
+        "2차 VPN 게이트웨이는 1차 구현 배치에 포함하지 않습니다."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "관리·운영 VM",
+      "items": [
+        "Server 01: 관리 게이트웨이, Ansible, Runner, 외부 모니터, Kubernetes API LB, DNS 1.",
+        "Server 08: nginx edge, Harbor, PostgreSQL, DNS 2. 두 호스트는 관리·공유 서비스의 책임을 분리합니다."
+      ]
+    }
+  ]
+}

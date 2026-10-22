@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/tt-a1i/archify.git",
+  "revision": "25cf37080fc8b1dbe758a4efc3935b55f3327083",
+  "version": "3.2.0",
+  "sourceRevision": "517b51fcafd572e5f0296774ccd0ad21b23553a2",
+  "documents": [
+    {"name":"phase1-logical","page":"phase1_logical_current.html"},
+    {"name":"phase1-physical","page":"phase1_physical_current.html"},
+    {"name":"phase2-logical","page":"phase2_logical_architecture.html"},
+    {"name":"phase2-physical","page":"phase2_physical_architecture.html"}
+  ]
+}

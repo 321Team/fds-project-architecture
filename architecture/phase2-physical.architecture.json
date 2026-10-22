@@ -1,0 +1,569 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "2차 물리·네트워크 아키텍처",
+    "output": "diagrams/phase2-physical.html",
+    "locale": "ko",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/321Team/fds-project-architecture.git",
+      "revision": "517b51fcafd572e5f0296774ccd0ad21b23553a2"
+    }
+  },
+  "components": [
+    {
+      "id": "users",
+      "type": "external",
+      "label": "외부 사용자",
+      "sublabel": "인터넷",
+      "pos": [
+        20.0,
+        340.0
+      ],
+      "size": [
+        100.0,
+        60.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5187,
+          "end_line": 5192
+        },
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5172,
+          "end_line": 5176
+        }
+      ]
+    },
+    {
+      "id": "rh_cp",
+      "type": "cloud",
+      "label": "ROSA HCP 컨트롤플레인",
+      "sublabel": "Red Hat 관리 계정",
+      "pos": [
+        545.0,
+        50.0
+      ],
+      "size": [
+        200.0,
+        62.0
+      ],
+      "tag": "4.22.17 고정",
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5199,
+          "end_line": 5204
+        }
+      ]
+    },
+    {
+      "id": "nat",
+      "type": "cloud",
+      "label": "NAT GW ×1",
+      "sublabel": "EIP fds-nat · az1",
+      "pos": [
+        262.0,
+        180.0
+      ],
+      "size": [
+        148.0,
+        62.0
+      ],
+      "tag": "private_a/b/c 기본 경로",
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5211,
+          "end_line": 5216
+        },
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5184,
+          "end_line": 5188
+        }
+      ]
+    },
+    {
+      "id": "ingress_lb",
+      "type": "security",
+      "label": "Ingress LB",
+      "sublabel": "external · 예상 1",
+      "pos": [
+        262.0,
+        340.0
+      ],
+      "size": [
+        148.0,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5223,
+          "end_line": 5228
+        },
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5173,
+          "end_line": 5177
+        }
+      ]
+    },
+    {
+      "id": "relay",
+      "type": "security",
+      "label": "Relay EC2 (Libreswan)",
+      "sublabel": "t3.medium · 10.20.110.10 · EIP",
+      "pos": [
+        262.0,
+        680.0
+      ],
+      "size": [
+        176.0,
+        62.0
+      ],
+      "tag": "단일 장애점 · src/dst check off",
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5235,
+          "end_line": 5240
+        },
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5178,
+          "end_line": 5182
+        }
+      ]
+    },
+    {
+      "id": "vpce",
+      "type": "security",
+      "label": "PrivateLink VPCE",
+      "sublabel": "예상 1 · 생성 후 확인",
+      "pos": [
+        560.0,
+        220.0
+      ],
+      "size": [
+        170.0,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5248,
+          "end_line": 5253
+        },
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5175,
+          "end_line": 5179
+        }
+      ]
+    },
+    {
+      "id": "workers",
+      "type": "backend",
+      "label": "Worker m5.xlarge ×3",
+      "sublabel": "gp3 300GiB · IMDSv2",
+      "pos": [
+        560.0,
+        380.0
+      ],
+      "size": [
+        170.0,
+        62.0
+      ],
+      "tag": "MachinePool workers",
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5260,
+          "end_line": 5265
+        },
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5174,
+          "end_line": 5178
+        }
+      ]
+    },
+    {
+      "id": "private_bc",
+      "type": "cloud",
+      "label": "private_b · private_c",
+      "sublabel": "10.20.20.0/24 · 10.20.30.0/24",
+      "pos": [
+        560.0,
+        540.0
+      ],
+      "size": [
+        170.0,
+        62.0
+      ],
+      "tag": "2b · 2c · 미사용 · NAT route만",
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5272,
+          "end_line": 5277
+        }
+      ]
+    },
+    {
+      "id": "runner",
+      "type": "backend",
+      "label": "self-hosted Runner",
+      "sublabel": "10.250.10.20",
+      "pos": [
+        1130.0,
+        180.0
+      ],
+      "size": [
+        170.0,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5284,
+          "end_line": 5289
+        },
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5181,
+          "end_line": 5185
+        }
+      ]
+    },
+    {
+      "id": "vpngw",
+      "type": "security",
+      "label": "vpn-gw01",
+      "sublabel": "10.1.93.51",
+      "pos": [
+        900.0,
+        680.0
+      ],
+      "size": [
+        150.0,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5295,
+          "end_line": 5300
+        },
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5179,
+          "end_line": 5183
+        }
+      ]
+    },
+    {
+      "id": "harbor",
+      "type": "database",
+      "label": "Harbor",
+      "sublabel": "10.1.93.54:443",
+      "pos": [
+        1130.0,
+        460.0
+      ],
+      "size": [
+        170.0,
+        62.0
+      ],
+      "tag": "주 저장소 · 복귀 검증 별도",
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5307,
+          "end_line": 5312
+        }
+      ]
+    },
+    {
+      "id": "db01",
+      "type": "database",
+      "label": "db01 PostgreSQL",
+      "sublabel": "10.1.93.55:5432",
+      "pos": [
+        1130.0,
+        680.0
+      ],
+      "size": [
+        170.0,
+        62.0
+      ],
+      "tag": "복귀 via .51 · 시험창 적용/원복",
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5320,
+          "end_line": 5325
+        }
+      ]
+    },
+    {
+      "id": "igw",
+      "type": "cloud",
+      "label": "IGW",
+      "sublabel": "VPC 출입구",
+      "pos": [
+        172.0,
+        343.0
+      ],
+      "size": [
+        64.0,
+        54.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5333,
+          "end_line": 5338
+        },
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5183,
+          "end_line": 5187
+        }
+      ]
+    },
+    {
+      "id": "aws_svc",
+      "type": "cloud",
+      "label": "AWS 리전 서비스",
+      "sublabel": "ECR · S3 (VPC 밖)",
+      "pos": [
+        20.0,
+        50.0
+      ],
+      "size": [
+        190.0,
+        62.0
+      ],
+      "tag": "ECR 수동 전환 · S3 백업 보류",
+      "sources": [
+        {
+          "path": "phase2_physical_architecture.html",
+          "line": 5344,
+          "end_line": 5349
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "users-to-igw",
+      "from": "users",
+      "to": "igw",
+      "label": "HTTPS /api /readyz",
+      "variant": "emphasis"
+    },
+    {
+      "id": "ingress_lb-to-workers",
+      "from": "ingress_lb",
+      "to": "workers",
+      "label": "443 → Router Pod",
+      "variant": "emphasis"
+    },
+    {
+      "id": "workers-to-vpce",
+      "from": "workers",
+      "to": "vpce",
+      "label": "API",
+      "variant": "default"
+    },
+    {
+      "id": "vpce-to-rh_cp",
+      "from": "vpce",
+      "to": "rh_cp",
+      "label": "PrivateLink",
+      "variant": "security"
+    },
+    {
+      "id": "workers-to-nat",
+      "from": "workers",
+      "to": "nat",
+      "label": "0.0.0.0/0",
+      "variant": "dashed"
+    },
+    {
+      "id": "workers-to-relay",
+      "from": "workers",
+      "to": "relay",
+      "label": "시험창 경로 · DB 5432 / pull 443",
+      "variant": "dashed"
+    },
+    {
+      "id": "relay-to-vpngw",
+      "from": "relay",
+      "to": "vpngw",
+      "label": "IPsec 500/4500 · 인터넷(EIP ↔ 교육장 NAT)",
+      "variant": "security"
+    },
+    {
+      "id": "vpngw-to-harbor",
+      "from": "vpngw",
+      "to": "harbor",
+      "label": "Harbor pull 443 · 검증 별도",
+      "variant": "dashed"
+    },
+    {
+      "id": "vpngw-to-db01",
+      "from": "vpngw",
+      "to": "db01",
+      "label": "5432",
+      "variant": "default"
+    },
+    {
+      "id": "runner-to-rh_cp",
+      "from": "runner",
+      "to": "rh_cp",
+      "label": "API 443 · 검증 별도",
+      "variant": "dashed"
+    },
+    {
+      "id": "igw-to-ingress_lb",
+      "from": "igw",
+      "to": "ingress_lb",
+      "label": "HTTPS 443",
+      "variant": "emphasis"
+    },
+    {
+      "id": "nat-to-igw",
+      "from": "nat",
+      "to": "igw",
+      "label": "인터넷 출구",
+      "variant": "dashed"
+    },
+    {
+      "id": "igw-to-aws_svc",
+      "from": "igw",
+      "to": "aws_svc",
+      "label": "443 · ECR/S3",
+      "variant": "dashed"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "AWS VPC 10.20.0.0/16",
+      "wraps": [
+        "nat",
+        "ingress_lb",
+        "relay",
+        "vpce",
+        "workers",
+        "private_bc",
+        "igw"
+      ],
+      "pad": 25
+    },
+    {
+      "kind": "security-group",
+      "label": "public_transport_a 10.20.110.0/24",
+      "wraps": [
+        "nat",
+        "ingress_lb",
+        "relay"
+      ],
+      "pad": 16
+    },
+    {
+      "kind": "security-group",
+      "label": "private_a 10.20.10.0/24",
+      "wraps": [
+        "vpce",
+        "workers"
+      ],
+      "pad": 16
+    },
+    {
+      "kind": "region",
+      "label": "온프레미스",
+      "wraps": [
+        "runner",
+        "vpngw",
+        "harbor",
+        "db01"
+      ],
+      "pad": 20
+    },
+    {
+      "kind": "region",
+      "label": "Red Hat 관리 영역",
+      "wraps": [
+        "rh_cp"
+      ],
+      "pad": 18
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "정본과 실제 검증 범위",
+      "items": [
+        "docs-v3.1.22(2026-10-19)의 확정 설계입니다. 단일 가용영역은 Worker 배치 범위이며, 클라우드 통합 검증과 최종 인수는 별도입니다."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "확정 설계 (물리)",
+      "items": [
+        "ROSA HCP · 공개 API/Ingress · Worker 단일 AZ 2a",
+        "Worker 3대 private_a · NAT 1개 공용 (private_b/c는 생성만, 미사용)",
+        "진입: 인터넷 → IGW → Ingress LB → Router Pod · 출구: NAT → IGW",
+        "이미지 공급안: Harbor Primary + ECR 수동 전환 (Runtime 대기)",
+        "machine 10.20.0.0/16 · pod 10.128.0.0/14 · svc 172.30.0.0/16"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "실환경 검증·보류 · 점선",
+      "items": [
+        "이미지 공급: Harbor 443의 허용·인증·cold-pull·전환/복귀 검증 별도",
+        "OADP → S3 백업은 보류 · 실제 복원 검증 없음",
+        "Runner 직접 배포 채택 · API 접속 경로·동작 확인 대기",
+        "온프렘 경로는 승인된 시험창에서 적용·시험·원복. DB·Harbor 복귀 경로 각각 검증",
+        "VPCE·LB 개수: 생성 후 readback"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "그리지 않은 것",
+      "items": [
+        "추가 Hybrid DNS 보류 · public DNS/IP 및 엄격한 TLS 검증 유지",
+        "계정번호·EIP·리소스 ID는 공유용으로 생략"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "구성요소별 사양과 확인 조건",
+      "items": [
+        "외부 사용자 · 인터넷 · HTTPS /api /readyz",
+        "ROSA HCP 컨트롤플레인 · Red Hat 관리 계정 · Red Hat 관리 · 4.22.17 고정",
+        "NAT GW ×1 · EIP fds-nat · az1 단일 · private_a/b/c의 0.0.0.0/0 대상 · Relay EIP와 별개(Relay는 egress 우회 경로 아님)",
+        "Ingress LB · external · 예상 1(생성 후 readback) · public_transport_a(kubernetes.io/role/elb) · IGW 경유 진입 → Router Pod(워커)",
+        "Relay EC2 (Libreswan) · t3.medium · 암호화 gp3 40GiB · 10.20.110.10 · EIP 1:1 NAT · source_dest_check=false · SG: UDP 500/4500, DB 5432 / 조건부 Harbor 443; private_a 출발·허용/원복 검증 별도 · 단일 장애점 위험 유지",
+        "PrivateLink VPCE · 예상 1 · 생성 후 확인 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (Worker는 2a만 사용) › private_a 10.20.10.0/24",
+        "Worker m5.xlarge ×3 · 암호화 gp3 300GiB · IMDSv2 required · autoscaling=false / auto_repair=true · max_surge=1 / max_unavailable=0 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (Worker는 2a만 사용) › private_a 10.20.10.0/24 · MachinePool workers",
+        "private_b 10.20.20.0/24 (2b) · private_c 10.20.30.0/24 (2c) · Terraform으로 생성 · ROSA 미사용(role tag 없음) · 0.0.0.0/0 → az1 NAT만",
+        "self-hosted Runner · 10.250.10.20 · 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24",
+        "vpn-gw01 · 10.1.93.51 · 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24",
+        "Harbor · 10.1.93.54:Harbor 443 Primary(Runtime 대기) · 복귀 경로 10.20.0.0/16 via .51(허용·인증·원복 검증 필요) · Relay 보안그룹·방화벽의 443 허용과 복귀 검증 별도",
+        "db01 PostgreSQL · 10.1.93.55:5432 · 복귀 경로 10.20.0.0/16 via vpn-gw01 .51 (시험창에서 적용·원복)",
+        "Internet Gateway · VPC 출입구 · 외부 사용자 → Ingress LB 진입과 NAT GW 인터넷 출구가 모두 통과",
+        "AWS 리전 서비스(VPC 밖) · ECR: 이미지 공급안(Harbor Primary + ECR 수동 전환, Runtime 대기) · S3: OADP 백업 보류 · ECR/S3용 VPC Endpoint 없음 → NAT·IGW 경유 443"
+      ]
+    }
+  ]
+}
