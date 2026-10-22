@@ -9,7 +9,9 @@
 
 `catalog.json`은 이전 가이드 ID·설명 전문과 변환 기준을 보관합니다. 2차 논리의 안내 ID는 `primary-path`, `db-path`, `ipsec-vpn`, `netpol`, `cicd-image`, `platform`입니다. Archify 3.x에서 제거된 구형 Story/Guided View UI를 공식 단계별 설명으로 이전했습니다. 단계 선택과 노드 열람을 제공하지만, 과거 다중 노드 하이라이트·스토리 애니메이션과 동일하다고 표현하지 않습니다.
 
-필요 환경은 Node.js 18 이상, Git, Chrome/Chromium 또는 Edge입니다. Archify는 별도 API 키 없이 로컬에서 생성·검증합니다. 도구 버전과 원본 커밋은 `toolchain.json`에 고정합니다. 개인 협업 지침이나 외부 AI 설정은 이 저장소의 정책에 포함하지 않습니다.
+커밋된 생성물과 바이트 단위로 대조하는 기준 환경은 Windows, Node.js 18 이상, Git, Chrome/Chromium 또는 Edge입니다. Archify는 별도 API 키 없이 로컬에서 생성·검증합니다. 도구 버전과 원본 커밋은 `toolchain.json`에 고정합니다. 개인 협업 지침이나 외부 AI 설정은 이 저장소의 정책에 포함하지 않습니다.
+
+Archify 3.2.0의 explainer는 내부 `sourcePath`에 운영체제별 경로 구분자를 기록합니다. Linux CI에서 생성·도면 브라우저 검사·시험은 통과했으나, 이 메타데이터 차이로 읽기 페이지의 바이트가 달라졌습니다. 원본이나 생성 HTML을 임의로 후처리하지 않고, CI도 Windows에서 재생성해 전체 파일 일치 검사를 유지합니다. 다른 운영체제에서 생성한 파일이 바이트 단위로 같다고 보장하지 않습니다.
 
 ## 실행
 

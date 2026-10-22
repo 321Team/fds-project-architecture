@@ -7,7 +7,9 @@ permissions:
   contents: read
 jobs:
   architecture:
-    runs-on: ubuntu-latest
+    # Archify explainer embeds platform-specific sourcePath metadata.
+    # Keep the byte-for-byte canonical build on the author's Windows platform.
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
