@@ -1,0 +1,9 @@
+architecture/*.json text eol=lf
+architecture/*.md text eol=lf
+scripts/*.mjs text eol=lf
+.github/workflows/*.yml text eol=lf
+phase1_logical_current.html text eol=lf linguist-generated=true whitespace=-blank-at-eol
+phase1_physical_current.html text eol=lf linguist-generated=true whitespace=-blank-at-eol
+phase2_logical_architecture.html text eol=lf linguist-generated=true whitespace=-blank-at-eol
+phase2_physical_architecture.html text eol=lf linguist-generated=true whitespace=-blank-at-eol
+diagrams/*.html text eol=lf linguist-generated=true whitespace=-blank-at-eol

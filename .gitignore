@@ -1,0 +1,9 @@
+.cache/
+.archify-receipts/
+*.delivery.json
+*.delivery-pending.json
+*.finalize.json
+*.finalize-summary.json
+*.browser-check.json
+*.visual-check.json
+*.visual-check.html

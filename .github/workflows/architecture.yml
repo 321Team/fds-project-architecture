@@ -1,0 +1,31 @@
+name: Validate Archify sources
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  architecture:
+    # Archify explainer embeds platform-specific sourcePath metadata.
+    # Keep the byte-for-byte canonical build on the author's Windows platform.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Checkout pinned official Archify
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: tt-a1i/archify
+          ref: 25cf37080fc8b1dbe758a4efc3935b55f3327083
+          path: .cache/archify
+          persist-credentials: false
+      - name: Generate and verify diagrams and reading pages
+        run: |
+          node --version
+          node scripts/build-architecture.mjs
+          node --test scripts/architecture.test.mjs
+          node scripts/build-architecture.mjs --check
+          git diff --exit-code -- phase1_logical_current.html phase1_physical_current.html phase2_logical_architecture.html phase2_physical_architecture.html diagrams architecture/build-manifest.json

@@ -1,0 +1,695 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "2차 논리 아키텍처",
+    "output": "diagrams/phase2-logical.html",
+    "locale": "ko",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/321Team/fds-project-architecture.git",
+      "revision": "517b51fcafd572e5f0296774ccd0ad21b23553a2"
+    }
+  },
+  "components": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "외부 사용자",
+      "sublabel": "HTTPS",
+      "pos": [
+        30,
+        355
+      ],
+      "size": [
+        120,
+        60.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5198,
+          "end_line": 5203
+        },
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5183,
+          "end_line": 5187
+        }
+      ]
+    },
+    {
+      "id": "lb",
+      "type": "cloud",
+      "label": "AWS Ingress LB",
+      "sublabel": "external · 예상 1",
+      "pos": [
+        256,
+        354
+      ],
+      "size": [
+        110,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5210,
+          "end_line": 5215
+        },
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5184,
+          "end_line": 5188
+        }
+      ]
+    },
+    {
+      "id": "router",
+      "type": "security",
+      "label": "OpenShift Router",
+      "sublabel": "Route /api · /readyz",
+      "pos": [
+        456,
+        354
+      ],
+      "size": [
+        160,
+        62.0
+      ],
+      "tag": "edge TLS 종료 · HAProxy",
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5221,
+          "end_line": 5226
+        },
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5185,
+          "end_line": 5189
+        }
+      ]
+    },
+    {
+      "id": "txapi",
+      "type": "backend",
+      "label": "transaction-api ×3",
+      "sublabel": "fds-app",
+      "pos": [
+        746,
+        354
+      ],
+      "size": [
+        160,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5234,
+          "end_line": 5239
+        },
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5186,
+          "end_line": 5190
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "type": "backend",
+      "label": "fds-engine ×3",
+      "sublabel": "외부 Route 없음",
+      "pos": [
+        1040,
+        354
+      ],
+      "size": [
+        160,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5245,
+          "end_line": 5250
+        },
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5188,
+          "end_line": 5192
+        }
+      ]
+    },
+    {
+      "id": "idp",
+      "type": "security",
+      "label": "htpasswd IdP + RBAC",
+      "sublabel": "MFA 아님 · admin/view",
+      "pos": [
+        746,
+        150
+      ],
+      "size": [
+        180,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5256,
+          "end_line": 5261
+        }
+      ]
+    },
+    {
+      "id": "mon",
+      "type": "cloud",
+      "label": "openshift-monitoring",
+      "sublabel": "UWM 끔",
+      "pos": [
+        1040,
+        244
+      ],
+      "size": [
+        160,
+        56.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5268,
+          "end_line": 5273
+        }
+      ]
+    },
+    {
+      "id": "deployer",
+      "type": "security",
+      "label": "ci-cd/fds-deployer",
+      "sublabel": "NS Role만",
+      "pos": [
+        1020,
+        150
+      ],
+      "size": [
+        180,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5279,
+          "end_line": 5284
+        }
+      ]
+    },
+    {
+      "id": "github",
+      "type": "external",
+      "label": "GitHub",
+      "sublabel": "소스 · 워크플로",
+      "pos": [
+        1510,
+        30
+      ],
+      "size": [
+        210,
+        60.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5291,
+          "end_line": 5296
+        },
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5189,
+          "end_line": 5193
+        }
+      ]
+    },
+    {
+      "id": "runner",
+      "type": "backend",
+      "label": "self-hosted Runner",
+      "sublabel": "관리망 10.250.10.20",
+      "pos": [
+        1510,
+        150
+      ],
+      "size": [
+        210,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5303,
+          "end_line": 5308
+        },
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5190,
+          "end_line": 5194
+        }
+      ]
+    },
+    {
+      "id": "harbor",
+      "type": "database",
+      "label": "Harbor",
+      "sublabel": "주 저장소 · P2 pull만",
+      "pos": [
+        1510,
+        330
+      ],
+      "size": [
+        210,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5314,
+          "end_line": 5319
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "db01 PostgreSQL",
+      "sublabel": "온프렘",
+      "pos": [
+        1510,
+        650
+      ],
+      "size": [
+        210,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5326,
+          "end_line": 5331
+        }
+      ]
+    },
+    {
+      "id": "relay",
+      "type": "security",
+      "label": "AWS Relay EC2",
+      "sublabel": "Libreswan · 응답자",
+      "pos": [
+        1280,
+        460
+      ],
+      "size": [
+        140,
+        62.0
+      ],
+      "tag": "UDP 500/4500 · NAT-T",
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5338,
+          "end_line": 5343
+        },
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5193,
+          "end_line": 5197
+        }
+      ]
+    },
+    {
+      "id": "vpngw",
+      "type": "security",
+      "label": "vpn-gw01 · .51",
+      "sublabel": "Libreswan · 개시자",
+      "pos": [
+        1510,
+        460
+      ],
+      "size": [
+        210,
+        62.0
+      ],
+      "tag": "IKEv2 PSK · 신규 연결은 VPC→온프렘만",
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5351,
+          "end_line": 5356
+        },
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5194,
+          "end_line": 5198
+        }
+      ]
+    },
+    {
+      "id": "netpol",
+      "type": "security",
+      "label": "NetworkPolicy 00~03",
+      "sublabel": "기본 차단 + 허용 3개",
+      "pos": [
+        746,
+        520
+      ],
+      "size": [
+        210,
+        56.0
+      ],
+      "tag": "00 deny · 01 DNS · 02 router · 03 on-prem",
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5364,
+          "end_line": 5369
+        }
+      ]
+    },
+    {
+      "id": "nsmon",
+      "type": "cloud",
+      "label": "monitoring-api",
+      "sublabel": "Namespace · RBAC만",
+      "pos": [
+        456,
+        194
+      ],
+      "size": [
+        180,
+        62.0
+      ],
+      "tag": "워크로드 없음 · UWM 끔",
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5377,
+          "end_line": 5382
+        }
+      ]
+    },
+    {
+      "id": "workers",
+      "type": "backend",
+      "label": "Worker ×3",
+      "sublabel": "노드 image pull",
+      "pos": [
+        1040,
+        635
+      ],
+      "size": [
+        160,
+        62.0
+      ],
+      "sources": [
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5389,
+          "end_line": 5394
+        },
+        {
+          "path": "phase2_logical_architecture.html",
+          "line": 5192,
+          "end_line": 5196
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "client-to-lb",
+      "from": "client",
+      "to": "lb",
+      "label": "HTTPS · IGW",
+      "variant": "emphasis"
+    },
+    {
+      "id": "lb-to-router",
+      "from": "lb",
+      "to": "router",
+      "label": "TCP 443",
+      "variant": "emphasis"
+    },
+    {
+      "id": "router-to-txapi",
+      "from": "router",
+      "to": "txapi",
+      "label": "HTTP · 앱 정책",
+      "variant": "emphasis"
+    },
+    {
+      "id": "txapi-to-engine",
+      "from": "txapi",
+      "to": "engine",
+      "label": "TCP 8001 · 앱 NP",
+      "variant": "emphasis"
+    },
+    {
+      "id": "txapi-to-relay",
+      "from": "txapi",
+      "to": "relay",
+      "label": "DB 5432 · NP-03",
+      "variant": "security"
+    },
+    {
+      "id": "engine-to-mon",
+      "from": "engine",
+      "to": "mon",
+      "label": "앱 지표 · 수집 범위 밖",
+      "variant": "dashed"
+    },
+    {
+      "id": "github-to-runner",
+      "from": "github",
+      "to": "runner",
+      "label": "job",
+      "variant": "default"
+    },
+    {
+      "id": "runner-to-harbor",
+      "from": "runner",
+      "to": "harbor",
+      "label": "push",
+      "variant": "default"
+    },
+    {
+      "id": "runner-to-deployer",
+      "from": "runner",
+      "to": "deployer",
+      "label": "API 443 · 검증 별도",
+      "variant": "dashed"
+    },
+    {
+      "id": "workers-to-relay",
+      "from": "workers",
+      "to": "relay",
+      "label": "노드 image pull 443",
+      "variant": "dashed"
+    },
+    {
+      "id": "relay-to-vpngw",
+      "from": "relay",
+      "to": "vpngw",
+      "label": "IPsec VPN",
+      "variant": "security"
+    },
+    {
+      "id": "vpngw-to-db",
+      "from": "vpngw",
+      "to": "db",
+      "label": "5432 (nft 허용)",
+      "variant": "security"
+    },
+    {
+      "id": "vpngw-to-harbor",
+      "from": "vpngw",
+      "to": "harbor",
+      "label": "Harbor 443",
+      "variant": "dashed"
+    },
+    {
+      "id": "vpngw-to-relay",
+      "from": "vpngw",
+      "to": "relay",
+      "label": "IKEv2 개시",
+      "variant": "security"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "AWS VPC 10.20.0.0/16",
+      "wraps": [
+        "lb",
+        "router",
+        "txapi",
+        "engine",
+        "idp",
+        "mon",
+        "deployer",
+        "relay",
+        "netpol",
+        "nsmon",
+        "workers"
+      ],
+      "pad": 18
+    },
+    {
+      "kind": "region",
+      "label": "ROSA HCP: 논리 구성",
+      "wraps": [
+        "router",
+        "txapi",
+        "engine",
+        "idp",
+        "mon",
+        "deployer",
+        "netpol",
+        "nsmon",
+        "workers"
+      ],
+      "pad": 20
+    },
+    {
+      "kind": "security-group",
+      "label": "fds-app: 기본 차단",
+      "wraps": [
+        "txapi",
+        "engine",
+        "netpol"
+      ],
+      "pad": 16
+    },
+    {
+      "kind": "security-group",
+      "label": "openshift-ingress",
+      "wraps": [
+        "router"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "security-group",
+      "label": "ci-cd",
+      "wraps": [
+        "deployer"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "security-group",
+      "label": "monitoring-api",
+      "wraps": [
+        "nsmon"
+      ],
+      "pad": 10
+    },
+    {
+      "kind": "region",
+      "label": "온프레미스",
+      "wraps": [
+        "runner",
+        "harbor",
+        "vpngw",
+        "db"
+      ],
+      "pad": 20
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "정본과 실제 검증 범위",
+      "items": [
+        "docs-v3.1.22(2026-10-19)의 확정 설계입니다. 단일 가용영역은 Worker 배치 범위이며, 클라우드 통합 검증과 최종 인수는 별도입니다."
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "확정 설계 (논리)",
+      "items": [
+        "Namespace: fds-app · monitoring-api · ci-cd (monitoring-api는 NS·RBAC만, 워크로드 없음)",
+        "관리자·조회자·모니터링 담당 권한 분리",
+        "SCC restricted-v2, custom SCC 없음",
+        "fds-engine은 DB 직접 접속 없음"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "실환경 검증과 보류 항목",
+      "items": [
+        "이미지 공급안(Harbor Primary + ECR 수동 전환) Runtime 대기",
+        "Runner 직접 배포 채택 · API 접속 경로·동작 확인 대기",
+        "VPN Route ON 전에는 DB·pull 경로 없음",
+        "기본 차단·앱 허용 정책은 확정 설계. 실제 합산 정책·허용/거부 검증 별도",
+        "IPsec 터널·nft 허용표 Runtime 미검증"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "NetworkPolicy (fds-app)",
+      "items": [
+        "NP-00 기본 차단: Ingress·Egress 전부",
+        "NP-01 DNS: openshift-dns 53/5353만",
+        "NP-02는 probe용 route-exposed Pod 정책. 앱은 해당 라벨 없이 별도 앱 정책 사용",
+        "NP-03 onprem-egress API → db01/32 5432. node pull은 Pod 정책과 별도",
+        "앱 NP(fds-msa): transaction-api → fds-engine 8001"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "IPsec VPN",
+      "items": [
+        "AWS EC2 Relay 1대 (단일 장애점 위험 유지)",
+        "vpn-gw01 개시 ⇄ Relay 응답, IKEv2 PSK · UDP 500/4500 NAT-T",
+        "터널 대역 10.1.93.0/24 ⇄ 10.20.0.0/16, Route 전파 없음(static)",
+        "허용: worker → db01 5432 (+Harbor 443은 이미지 공급안), 온프렘 개시 신규 연결은 차단",
+        "SA 없으면 drop (평문 우회 차단)",
+        "Relay는 public 10.20.110.0/24, DB 출발지는 worker private_a 10.20.10.0/24"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Phase 1 대비",
+      "items": [
+        "kubeadm+Calico → ROSA HCP",
+        "Prometheus/Grafana 자체 운영 → 플랫폼 모니터링",
+        "외부 노출은 /api · /readyz 2개만",
+        "진입: IGW → Ingress LB → Router(edge TLS 종료) → Pod"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "구성요소별 사양과 확인 조건",
+      "items": [
+        "외부 사용자 · HTTPS",
+        "AWS Ingress LB · external · 예상 1(생성 후 확인) · public 10.20.110.0/24 · 인터넷 → IGW → LB → Router",
+        "OpenShift Router · openshift-ingress · Route 2개(/api, /readyz) · edge TLS 종료(이후 HTTP) · Service의 Endpoint(Pod)로 직접 전달 · 워커 노드(private_a)에서 동작",
+        "transaction-api ×3 · fds-app · ROSA 클러스터 fds-rosa-hcp › fds-app · NP-00 기본 전부 차단",
+        "fds-engine ×3 · 외부 Route 없음 · ROSA 클러스터 fds-rosa-hcp › fds-app · NP-00 기본 전부 차단",
+        "htpasswd IdP + RBAC · MFA 아님 · admin/view · ROSA 클러스터 fds-rosa-hcp",
+        "openshift-monitoring · UWM 끔 · ROSA 클러스터 fds-rosa-hcp",
+        "ci-cd/fds-deployer · NS Role만 · ROSA 클러스터 fds-rosa-hcp › ci-cd",
+        "GitHub · 소스 · 워크플로",
+        "self-hosted Runner · 관리망 10.250.10.20 · 온프레미스",
+        "Harbor · 주 저장소 · P2 pull만 · 온프렘 10.1.93.0/24 · 이미지 공급안: Harbor Primary + ECR 수동 전환 (Runtime 대기)",
+        "db01 PostgreSQL · 온프렘 · 온프렘 10.1.93.0/24 · 10.1.93.55:5432 · 복귀 경로 10.20.0.0/16 via vpn-gw01 .51 (시험창에서 적용·원복)",
+        "AWS Relay EC2 · Libreswan · 응답자 · AWS VPC 10.20.0.0/16 › public_transport_a · UDP 500/4500 · NAT-T · AWS EC2 중계 확정 · SA 없으면 drop (fail-closed)",
+        "vpn-gw01 · .51 · Libreswan · 개시자 · 온프렘 10.1.93.0/24 · IKEv2 PSK · 터널 대역 10.1.93.0/24 ⇄ 10.20.0.0/16 · 신규 연결은 VPC→온프렘만",
+        "NetworkPolicy 00~03 · 00 기본 차단(Ingress·Egress) · 01 DNS(openshift-dns 53/5353) · 02 Router → route-exposed Pod · 03 onprem-egress API → db01/32 5432 · 앱/플랫폼 정책 합산 검증 별도 · node pull은 별도 통제",
+        "monitoring-api · Namespace · RBAC만 · ROSA 클러스터 fds-rosa-hcp › monitoring-api · 현재 워크로드 없음(Prometheus/Grafana 자체 운영 대신 플랫폼 모니터링, UWM 끔)",
+        "Worker ×3 · private_a · Harbor HTTPS 이미지 다운로드는 노드 경로이며 Pod NetworkPolicy와 별도 · 실제 pull 검증 필요"
+      ]
+    }
+  ]
+}
