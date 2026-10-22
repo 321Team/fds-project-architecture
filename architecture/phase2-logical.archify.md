@@ -38,7 +38,8 @@ AWS ROSA HCP로 확장하는 확정 설계와 실제 검증 대상을 구분합�
 - Runner 직접 배포 채택 · API 접속 경로·동작 확인 대기
 - VPN Route ON 전에는 DB·pull 경로 없음
 - 기본 차단·앱 허용 정책은 확정 설계. 실제 합산 정책·허용/거부 검증 별도
-- IPsec 터널·nft 허용표 Runtime 미검증
+- 2026-10-15 당시 조건의 제한 VPN 시험에서 터널 수립, 비허용 Relay 출발지의 DB 5432/22 차단, stop/start와 양쪽 원복 기록을 제출 자료 범위에서 수용했습니다. 상시 터널 운영이나 상위 인수 완료를 뜻하지 않습니다.
+- 최신 nft 허용표 전체와 API의 DB 업무 경로, Worker의 Harbor 이미지 pull을 포함한 통합 검증은 대기 상태입니다. 최종 SSM 세션 조회 원문과 별도 최종 AWS route 재조회가 없는 자료 한계를 유지하며, 이번 문구 교정은 새 서버 시험 결과가 아닙니다.
 
 ## NetworkPolicy (fds-app) {#details-3}
 
