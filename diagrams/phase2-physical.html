@@ -5301,16 +5301,20 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <path data-edge-from="runner" data-edge-to="rh_cp" data-edge-label="API 443 · 검증 별도" data-edge-key="9" data-edge-id="runner-to-rh_cp" data-composition-points="1146,180;1146,96;745,96" data-composition-crossover="halo" data-composition-independent="true" d="M 1146 180 L 1146 104 Q 1146 96 1138 96 L 745 96" class="a-dashed" data-animate="edge" style="--step:9" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:10">
-          <path data-graph-role="automatic-crossover-underlay" d="M 204 397 L 204 413 Q 204 421 212 421 L 230 421 Q 238 421 238 413 L 238 379 Q 238 371 246 371 L 262 371" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="igw" data-edge-to="ingress_lb" data-edge-label="HTTPS 443" data-edge-key="10" data-edge-id="igw-to-ingress_lb" data-composition-points="204,397;204,421;238,421;238,371;262,371" data-composition-crossover="halo" data-composition-independent="true" d="M 204 397 L 204 413 Q 204 421 212 421 L 230 421 Q 238 421 238 413 L 238 379 Q 238 371 246 371 L 262 371" class="a-emphasis" data-animate="edge" style="--step:10" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 1215 242 L 1215 460" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="runner" data-edge-to="harbor" data-edge-label="image push 443" data-edge-key="10" data-edge-id="runner-to-harbor" data-composition-points="1215,242;1215,460" data-composition-crossover="halo" data-composition-independent="true" d="M 1215 242 L 1215 460" class="a-default" data-animate="edge" style="--step:10" stroke-width="1.5" marker-end="url(#arrowhead)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:11">
-          <path data-graph-role="automatic-crossover-underlay" d="M 262 226 L 228 226 Q 220 226 220 234 L 220 343" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="nat" data-edge-to="igw" data-edge-label="인터넷 출구" data-edge-key="11" data-edge-id="nat-to-igw" data-composition-points="262,226;220,226;220,343" data-composition-crossover="halo" data-composition-independent="true" d="M 262 226 L 228 226 Q 220 226 220 234 L 220 343" class="a-dashed" data-animate="edge" style="--step:11" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+          <path data-graph-role="automatic-crossover-underlay" d="M 204 397 L 204 413 Q 204 421 212 421 L 230 421 Q 238 421 238 413 L 238 379 Q 238 371 246 371 L 262 371" fill="none" stroke="var(--mask)" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="igw" data-edge-to="ingress_lb" data-edge-label="HTTPS 443" data-edge-key="11" data-edge-id="igw-to-ingress_lb" data-composition-points="204,397;204,421;238,421;238,371;262,371" data-composition-crossover="halo" data-composition-independent="true" d="M 204 397 L 204 413 Q 204 421 212 421 L 230 421 Q 238 421 238 413 L 238 379 Q 238 371 246 371 L 262 371" class="a-emphasis" data-animate="edge" style="--step:11" stroke-width="1.8" marker-end="url(#arrowhead-emphasis)"/>
         </g>
         <g data-graph-role="automatic-crossover" style="--step:12">
+          <path data-graph-role="automatic-crossover-underlay" d="M 262 226 L 228 226 Q 220 226 220 234 L 220 343" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
+          <path data-edge-from="nat" data-edge-to="igw" data-edge-label="인터넷 출구" data-edge-key="12" data-edge-id="nat-to-igw" data-composition-points="262,226;220,226;220,343" data-composition-crossover="halo" data-composition-independent="true" d="M 262 226 L 228 226 Q 220 226 220 234 L 220 343" class="a-dashed" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+        </g>
+        <g data-graph-role="automatic-crossover" style="--step:13">
           <path data-graph-role="automatic-crossover-underlay" d="M 194 343 L 194 112" fill="none" stroke="var(--mask)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>
-          <path data-edge-from="igw" data-edge-to="aws_svc" data-edge-label="443 · ECR/S3" data-edge-key="12" data-edge-id="igw-to-aws_svc" data-composition-points="194,343;194,112" data-composition-crossover="halo" data-composition-independent="true" d="M 194 343 L 194 112" class="a-dashed" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
+          <path data-edge-from="igw" data-edge-to="aws_svc" data-edge-label="443 · ECR/S3" data-edge-key="13" data-edge-id="igw-to-aws_svc" data-composition-points="194,343;194,112" data-composition-crossover="halo" data-composition-independent="true" d="M 194 343 L 194 112" class="a-dashed" data-animate="edge" style="--step:12" stroke-width="1.5" marker-end="url(#arrowhead-dashed)"/>
         </g>
 
         <!-- Components -->
@@ -5524,15 +5528,19 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <rect x="894.9" y="76" width="101.2" height="14" rx="3" class="c-mask"/>
           <text x="945.5" y="86" class="t-edge-dashed" font-size="8" text-anchor="middle">API 443 · 검증 별도</text>
         </g>
-        <g data-detail="context" data-edge-from="igw" data-edge-to="ingress_lb" data-edge-label="HTTPS 443" data-edge-key="10" data-edge-id="igw-to-ingress_lb">
+        <g data-detail="context" data-edge-from="runner" data-edge-to="harbor" data-edge-label="image push 443" data-edge-key="10" data-edge-id="runner-to-harbor">
+          <rect x="1131.8000000000002" y="344" width="77.2" height="14" rx="3" class="c-mask"/>
+          <text x="1170.4" y="354" class="t-edge-default" font-size="8" text-anchor="middle">image push 443</text>
+        </g>
+        <g data-detail="context" data-edge-from="igw" data-edge-to="ingress_lb" data-edge-label="HTTPS 443" data-edge-key="11" data-edge-id="igw-to-ingress_lb">
           <rect x="194.4" y="401" width="53.199999999999996" height="14" rx="3" class="c-mask"/>
           <text x="221" y="411" class="t-edge-emphasis" font-size="8" text-anchor="middle">HTTPS 443</text>
         </g>
-        <g data-detail="context" data-edge-from="nat" data-edge-to="igw" data-edge-label="인터넷 출구" data-edge-key="11" data-edge-id="nat-to-igw">
+        <g data-detail="context" data-edge-from="nat" data-edge-to="igw" data-edge-label="인터넷 출구" data-edge-key="12" data-edge-id="nat-to-igw">
           <rect x="225.99999999999997" y="277.5" width="62.8" height="14" rx="3" class="c-mask"/>
           <text x="257.4" y="287.5" class="t-edge-dashed" font-size="8" text-anchor="middle">인터넷 출구</text>
         </g>
-        <g data-detail="context" data-edge-from="igw" data-edge-to="aws_svc" data-edge-label="443 · ECR/S3" data-edge-key="12" data-edge-id="igw-to-aws_svc">
+        <g data-detail="context" data-edge-from="igw" data-edge-to="aws_svc" data-edge-label="443 · ECR/S3" data-edge-key="13" data-edge-id="igw-to-aws_svc">
           <rect x="120.39999999999999" y="220.5" width="67.6" height="14" rx="3" class="c-mask"/>
           <text x="154.2" y="230.5" class="t-edge-dashed" font-size="8" text-anchor="middle">443 · ECR/S3</text>
         </g>
@@ -5827,7 +5835,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <li>PrivateLink VPCE · 예상 1 · 생성 후 확인 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (Worker는 2a만 사용) › private_a 10.20.10.0/24</li>
           <li>Worker m5.xlarge ×3 · 암호화 gp3 300GiB · IMDSv2 required · autoscaling=false / auto_repair=true · max_surge=1 / max_unavailable=0 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (Worker는 2a만 사용) › private_a 10.20.10.0/24 · MachinePool workers</li>
           <li>private_b 10.20.20.0/24 (2b) · private_c 10.20.30.0/24 (2c) · Terraform으로 생성 · ROSA 미사용(role tag 없음) · 0.0.0.0/0 → az1 NAT만</li>
-          <li>self-hosted Runner · 10.250.10.20 · 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24</li>
+          <li>self-hosted Runner · 10.250.10.20 · 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24 · Harbor 443 image push</li>
           <li>vpn-gw01 · 10.1.93.51 · 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24</li>
           <li>Harbor · 10.1.93.54:Harbor 443 Primary(Runtime 대기) · 복귀 경로 10.20.0.0/16 via .51(허용·인증·원복 검증 필요) · Relay 보안그룹·방화벽의 443 허용과 복귀 검증 별도</li>
           <li>db01 PostgreSQL · 10.1.93.55:5432 · 복귀 경로 10.20.0.0/16 via vpn-gw01 .51 (시험창에서 적용·원복)</li>
