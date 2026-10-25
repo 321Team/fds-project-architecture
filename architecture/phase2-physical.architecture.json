@@ -432,6 +432,13 @@
       "variant": "dashed"
     },
     {
+      "id": "runner-to-harbor",
+      "from": "runner",
+      "to": "harbor",
+      "label": "image push 443",
+      "variant": "default"
+    },
+    {
       "id": "igw-to-ingress_lb",
       "from": "igw",
       "to": "ingress_lb",
@@ -557,7 +564,7 @@
         "PrivateLink VPCE · 예상 1 · 생성 후 확인 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (Worker는 2a만 사용) › private_a 10.20.10.0/24",
         "Worker m5.xlarge ×3 · 암호화 gp3 300GiB · IMDSv2 required · autoscaling=false / auto_repair=true · max_surge=1 / max_unavailable=0 · AWS ap-northeast-2 · VPC 10.20.0.0/16 (Worker는 2a만 사용) › private_a 10.20.10.0/24 · MachinePool workers",
         "private_b 10.20.20.0/24 (2b) · private_c 10.20.30.0/24 (2c) · Terraform으로 생성 · ROSA 미사용(role tag 없음) · 0.0.0.0/0 → az1 NAT만",
-        "self-hosted Runner · 10.250.10.20 · 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24",
+        "self-hosted Runner · 10.250.10.20 · 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24 · Harbor 443 image push",
         "vpn-gw01 · 10.1.93.51 · 온프렘 10.1.93.0/24 · 관리망 10.250.10.0/24",
         "Harbor · 10.1.93.54:Harbor 443 Primary(Runtime 대기) · 복귀 경로 10.20.0.0/16 via .51(허용·인증·원복 검증 필요) · Relay 보안그룹·방화벽의 443 허용과 복귀 검증 별도",
         "db01 PostgreSQL · 10.1.93.55:5432 · 복귀 경로 10.20.0.0/16 via vpn-gw01 .51 (시험창에서 적용·원복)",

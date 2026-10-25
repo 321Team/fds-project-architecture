@@ -26,7 +26,7 @@ test('phase2 node IDs and original directed relationships survive',()=>{
   assert.deepEqual(d.components.map(n=>n.id).sort(),ids.sort());
   const edges=[...before.matchAll(/<path[^>]*data-edge-from="([^"]+)"[^>]*data-edge-to="([^"]+)"[^>]*>/g)];
   assert.equal(edges.length,13,'original relationship extractor must match the expected baseline inventory');
-  assert.equal(d.connections.length,name==='phase2-logical'?14:13,'only the documented reverse VPN relation is added');
+  assert.equal(d.connections.length,14,'only the documented reverse VPN relation (logical) and Runner → Harbor push (physical) are added');
   for(const m of edges){
    const e=d.connections.find(e=>e.from===m[1]&&e.to===m[2]);assert.ok(e,`${m[1]} → ${m[2]}`);
    const label=m[0].match(/data-edge-label="([^"]*)"/);
